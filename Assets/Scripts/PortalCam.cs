@@ -15,6 +15,10 @@ public class PortalCam : MonoBehaviour {
     void LateUpdate () {
         Vector3 linkedPortalOffset = (otherPortal.position - mainCam.transform.position);
 
+        transform.position = myPortal.position - linkedPortalOffset;
+        transform.rotation = mainCam.transform.rotation;
+
+        /*
         Plane portalPlane = new Plane (otherPortal.forward, otherPortal.position);
 
         Ray mainCamRay = new Ray (mainCam.transform.position, mainCam.transform.forward);
@@ -26,6 +30,7 @@ public class PortalCam : MonoBehaviour {
 
         transform.position = otherPortal.position;
         transform.rotation = mainCam.transform.rotation;
+        */
 
     }
 }
