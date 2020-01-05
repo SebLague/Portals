@@ -39,14 +39,15 @@
 
             sampler2D _MainTex;
             sampler2D portalTexture;
+            float4 tint;
 
             fixed4 frag (v2f i) : SV_Target
             {
                 fixed4 col = tex2D(_MainTex, i.uv);
                 fixed4 portalCol = tex2D(portalTexture, i.uv);
 
-                if (col.g == 2) {
-                    col = portalCol;
+                if (col.a == -1) {
+                    col = portalCol * tint;
                 }
                 return col;
             }

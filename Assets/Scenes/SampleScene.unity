@@ -1018,6 +1018,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   shader: {fileID: 4800000, guid: 8849477a00b6f4886b11ce113b2b156c, type: 3}
   portalTexture: {fileID: 8400000, guid: 349caf558d3034524ab3541218752975, type: 2}
+  tint: {r: 1, g: 0.5707547, b: 0.57767206, a: 0}
 --- !u!1 &1437953329
 GameObject:
   m_ObjectHideFlags: 0

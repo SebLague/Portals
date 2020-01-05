@@ -7,6 +7,7 @@ public class Master : MonoBehaviour {
 
     public Shader shader;
     public RenderTexture portalTexture;
+    public Color tint;
     Material mat;
 
     void OnRenderImage (RenderTexture src, RenderTexture dest) {
@@ -14,6 +15,7 @@ public class Master : MonoBehaviour {
             mat = new Material (shader);
         }
         mat.SetTexture ("portalTexture", portalTexture);
+        mat.SetColor ("tint", tint);
         Graphics.Blit (src, dest, mat);
     }
 }
