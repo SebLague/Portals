@@ -2,14 +2,18 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+[ExecuteInEditMode]
 public class PortalCam : MonoBehaviour {
 
     public Transform myPortal;
     public Transform otherPortal;
     Camera mainCam;
+    Camera portalCam;
 
     void Start () {
+        portalCam = GetComponentInChildren<Camera> ();
         mainCam = Camera.main;
+        //portalCam.transform.localPosition = mainCam.transform.localPosition;
     }
 
     void LateUpdate () {
@@ -17,6 +21,10 @@ public class PortalCam : MonoBehaviour {
 
         transform.position = myPortal.position - linkedPortalOffset;
         transform.rotation = mainCam.transform.rotation;
+        //portalCam.transform.localRotation = mainCam.transform.localRotation;
+
+        //transform.position = mainCam.transform.position;
+        // transform.rotation = mainCam.transform.rotation;
 
         /*
         Plane portalPlane = new Plane (otherPortal.forward, otherPortal.position);
