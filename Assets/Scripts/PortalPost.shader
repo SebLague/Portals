@@ -46,7 +46,7 @@
                 fixed4 col = tex2D(_MainTex, i.uv);
                 fixed4 portalCol = tex2D(portalTexture, i.uv);
 
-                if (col.a == -1) {
+                if (col.a < -0.5) {
                     col = portalCol * tint;
                 }
                 return col;

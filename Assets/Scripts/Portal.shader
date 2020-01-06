@@ -8,6 +8,7 @@
     {
         Tags { "RenderType"="Opaque" }
         LOD 100
+        Cull Off
 
         Pass
         {
@@ -49,7 +50,7 @@
                 // sample the texture
                 //fixed4 col = tex2D(_MainTex, i.uv);
                 //return col;
-                return fixed4(0,0,0,-1);
+                return fixed4(0,0,0,-10);
             }
             ENDCG
         }
