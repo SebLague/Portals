@@ -9,13 +9,13 @@
     }
     SubShader
     {
-        Tags { "RenderType"="Opaque" }
+        Tags { "Queue" = "Geometry" "IgnoreProjector" = "True"  "RenderType"="Geometry" }
         LOD 200
         Cull Off
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types
-        #pragma surface surf Standard fullforwardshadows
+        #pragma surface surf Standard addshadow
         // Use shader model 3.0 target, to get nicer looking lighting
         #pragma target 3.0
 
@@ -38,9 +38,7 @@
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float3 offsetToSliceCentre = sliceCentre - IN.worldPos;
-            clip (dot(offsetToSliceCentre, sliceNormal));
-
+            
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
@@ -54,8 +52,12 @@
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = c.a;
+
+            float3 offsetToSliceCentre = sliceCentre - IN.worldPos;
+            clip (dot(offsetToSliceCentre, sliceNormal));
+
         }
         ENDCG
     }
-    FallBack "Diffuse"
+    FallBack "VertexLit"
 }
