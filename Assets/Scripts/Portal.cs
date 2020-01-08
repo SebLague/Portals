@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class Portal : MonoBehaviour {
 
-    public RenderTexture displayTexture;
+    RenderTexture displayTexture;
     public Portal linkedPortal;
+    public MeshRenderer portalMesh;
     Camera playerCam;
     Camera portalCam;
 
     void Awake () {
         playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
+
     }
 
     void Start () {
-        linkedPortal.SetRenderTarget (displayTexture);
+
     }
 
     public void SetRenderTarget (RenderTexture targetTexture) {
@@ -24,9 +25,22 @@ public class Portal : MonoBehaviour {
     }
 
     void LateUpdate () {
+        UpdateRenderTexture ();
         Vector3 playerOffsetToLinkedPortal = playerCam.transform.position - linkedPortal.transform.position;
 
-        portalCam.transform.position = transform.position - playerOffsetToLinkedPortal;
+        portalCam.transform.position = transform.position + playerOffsetToLinkedPortal;
         portalCam.transform.rotation = playerCam.transform.rotation;
+
+    }
+
+    void UpdateRenderTexture () {
+        if (displayTexture == null || displayTexture.width != Screen.width || displayTexture.height != Screen.height) {
+            if (displayTexture != null) {
+                displayTexture.Release ();
+            }
+            displayTexture = new RenderTexture (Screen.width, Screen.height, 0);
+            portalMesh.material.SetTexture ("_MainTex", displayTexture);
+            linkedPortal.SetRenderTarget (displayTexture);
+        }
     }
 }

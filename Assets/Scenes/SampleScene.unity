@@ -1736,7 +1736,6 @@ GameObject:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
   - component: {fileID: 963194226}
-  - component: {fileID: 963194229}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -1809,22 +1808,6 @@ Transform:
   m_Father: {fileID: 465503967}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &963194229
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a2cee222422814ce7b2b1f59e6a33674, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  shader: {fileID: 4800000, guid: 8849477a00b6f4886b11ce113b2b156c, type: 3}
-  portalTexture: {fileID: 8400000, guid: 349caf558d3034524ab3541218752975, type: 2}
-  tint: {r: 1, g: 1, b: 1, a: 0}
-  portalVolumeA: {fileID: 0}
 --- !u!1 &984894342
 GameObject:
   m_ObjectHideFlags: 0
@@ -2198,8 +2181,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b9885b89b6d4fbe92f77801ecc3671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayTexture: {fileID: 0}
   linkedPortal: {fileID: 1963264184}
+  portalMesh: {fileID: 740552170}
 --- !u!1 &1386526995
 GameObject:
   m_ObjectHideFlags: 0
@@ -3188,8 +3171,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 57b9885b89b6d4fbe92f77801ecc3671, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayTexture: {fileID: 0}
   linkedPortal: {fileID: 1253338844}
+  portalMesh: {fileID: 2002565580}
 --- !u!1 &1986116633
 GameObject:
   m_ObjectHideFlags: 0
