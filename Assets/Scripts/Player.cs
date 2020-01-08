@@ -7,13 +7,22 @@ public class Player : MonoBehaviour {
     Vector3 posOld;
 
     public BoxCollider portalCollider;
+    public Transform linkedPortal;
+    FPSController controller;
+    Camera viewCam;
 
     void Start () {
-        posOld = transform.position;
+        viewCam = Camera.main;
+        posOld = GetCamNearClipCentre ();
+        controller = GetComponent<FPSController> ();
+    }
+
+    Vector3 GetCamNearClipCentre () {
+        return viewCam.transform.position + viewCam.transform.forward * viewCam.nearClipPlane;
     }
 
     void Update () {
-        Vector3 posNew = transform.position;
+        Vector3 posNew = GetCamNearClipCentre ();
         Plane plane = new Plane (portalCollider.transform.forward, portalCollider.transform.position);
         float colliderDepth = portalCollider.size.z;
 
@@ -23,10 +32,13 @@ public class Player : MonoBehaviour {
 
             if (portalCollider.Raycast (new Ray (posOld - dir * colliderDepth, dir), out _, dstTravelled + colliderDepth)) {
                 Debug.Log ("Went through portal!");
+                Vector3 portalOffset = transform.position - portalCollider.transform.position;
+                controller.Teleport (linkedPortal.position + portalOffset);
+
             } else {
                 Debug.Log ("Went passed portal");
             }
         }
-        posOld = posNew;
+        posOld = GetCamNearClipCentre ();
     }
 }

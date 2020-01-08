@@ -77,4 +77,10 @@ public class FPSController : MonoBehaviour {
 
     }
 
+    public void Teleport (Vector3 pos) {
+        controller.enabled = false;
+        transform.position = pos;
+        controller.enabled = true;
+    }
+
 }

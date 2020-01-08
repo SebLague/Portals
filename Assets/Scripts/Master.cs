@@ -17,6 +17,7 @@ public class Master : MonoBehaviour {
         }
         mat.SetTexture ("portalTexture", portalTexture);
         mat.SetColor ("tint", tint);
+       
         
         Graphics.Blit (src, dest, mat);
     }
