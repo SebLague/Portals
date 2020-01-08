@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class Car : Interdimensional {
 
-    public GameObject graphic;
-
+  
     // Start is called before the first frame update
     void Start () {
 
@@ -16,7 +15,5 @@ public class Car : Interdimensional {
 
     }
 
-    public override GameObject GetGraphicObject () {
-        return graphic;
-    }
+
 }

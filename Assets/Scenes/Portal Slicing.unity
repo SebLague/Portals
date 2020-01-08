@@ -180,7 +180,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7666ad4950a6b4a0f9e538b4efa03e13, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  graphic: {fileID: 1289172082}
+  graphicObject: {fileID: 1289172082}
+  mirrorGraphicObject: {fileID: 0}
 --- !u!4 &464814184
 Transform:
   m_ObjectHideFlags: 0
@@ -541,7 +542,7 @@ Camera:
   m_CullingMask:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_RenderingPath: -1
+  m_RenderingPath: 1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
   m_TargetEye: 3
@@ -633,6 +634,11 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: -1504981713932161579, guid: 5eaa110970f7d403bb33767f9157fb3d,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 962dfaf9212394041b50dd09b016cfca, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5eaa110970f7d403bb33767f9157fb3d, type: 3}
 --- !u!4 &4521745267228409030
@@ -723,6 +729,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4521745267410150135}
   - component: {fileID: 4521745267410150136}
+  - component: {fileID: 4521745267410150137}
   m_Layer: 8
   m_Name: Portal
   m_TagString: Untagged
@@ -762,6 +769,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   linkedPortal: {fileID: 4521745267965026890}
   portalMesh: {fileID: 4521745267439997836}
+--- !u!65 &4521745267410150137
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4521745267410150134}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.38, y: 2.17, z: 0.08}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!1 &4521745267439997834
 GameObject:
   m_ObjectHideFlags: 0
@@ -1036,6 +1056,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4521745267965026888}
   - component: {fileID: 4521745267965026890}
+  - component: {fileID: 4521745267965026891}
   m_Layer: 8
   m_Name: Portal (1)
   m_TagString: Untagged
@@ -1057,6 +1078,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   linkedPortal: {fileID: 4521745267410150136}
   portalMesh: {fileID: 4521745267992711987}
+--- !u!65 &4521745267965026891
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4521745267965026889}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 3.38, y: 2.17, z: 0.08}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!33 &4521745267979933410
 MeshFilter:
   m_ObjectHideFlags: 0
