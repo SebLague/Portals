@@ -27,8 +27,9 @@ public class Portal : MonoBehaviour {
     protected virtual void LateUpdate () {
         UpdateRenderTexture ();
         Vector3 playerOffsetToLinkedPortal = playerCam.transform.position - linkedPortal.transform.position;
-
-        portalCam.transform.position = transform.position + playerOffsetToLinkedPortal;
+        Vector3 localOffset = linkedPortal.transform.InverseTransformVector (playerOffsetToLinkedPortal);
+        
+        portalCam.transform.position = transform.position + transform.TransformVector (playerOffsetToLinkedPortal);
         portalCam.transform.rotation = playerCam.transform.rotation;
 
     }
