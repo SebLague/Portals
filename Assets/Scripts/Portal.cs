@@ -9,22 +9,22 @@ public class Portal : MonoBehaviour {
     public MeshRenderer portalMesh;
     Camera playerCam;
     Camera portalCam;
+    protected Plane collisionPlane;
 
     void Awake () {
         playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
-
     }
 
     void Start () {
-
+        collisionPlane = new Plane (transform.forward, transform.position);
     }
 
     public void SetRenderTarget (RenderTexture targetTexture) {
         portalCam.targetTexture = targetTexture;
     }
 
-    void LateUpdate () {
+    protected virtual void LateUpdate () {
         UpdateRenderTexture ();
         Vector3 playerOffsetToLinkedPortal = playerCam.transform.position - linkedPortal.transform.position;
 

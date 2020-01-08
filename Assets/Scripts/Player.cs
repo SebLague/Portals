@@ -25,6 +25,7 @@ public class Player : MonoBehaviour {
         Vector3 posNew = GetCamNearClipCentre ();
         Plane plane = new Plane (portalCollider.transform.forward, portalCollider.transform.position);
         float colliderDepth = portalCollider.size.z;
+    
 
         if (!plane.SameSide (posOld, posNew)) {
             float dstTravelled = (posNew - posOld).magnitude;

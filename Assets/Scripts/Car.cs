@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class Car : Interdimensional {
 
-  
-    // Start is called before the first frame update
-    void Start () {
+    public bool autoMove;
+    public float speed = 1;
 
-    }
-
-    // Update is called once per frame
     void Update () {
-
+        if (autoMove) {
+            transform.position += transform.forward * Time.deltaTime * speed;
+        }
     }
-
 
 }

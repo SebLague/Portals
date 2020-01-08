@@ -182,6 +182,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   graphicObject: {fileID: 1289172082}
   mirrorGraphicObject: {fileID: 0}
+  autoMove: 1
+  speed: 1
 --- !u!4 &464814184
 Transform:
   m_ObjectHideFlags: 0
@@ -190,7 +192,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 464814180}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 2.19, y: 0.28, z: -3.49}
+  m_LocalPosition: {x: 2.46, y: 0.28, z: -3.23}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1289172085}
