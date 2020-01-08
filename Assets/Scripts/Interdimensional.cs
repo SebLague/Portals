@@ -5,8 +5,29 @@ using UnityEngine;
 public abstract class Interdimensional : MonoBehaviour {
 
     public GameObject graphicObject;
+
     [HideInInspector]
     public GameObject mirrorGraphicObject;
+
+    public Vector3 positionOld { get; set; }
+    public bool teleportedToLinkedPortalLastFrame { get; set; }
+
+    public void EnterPortal () {
+        if (mirrorGraphicObject == null) {
+            mirrorGraphicObject = Instantiate (graphicObject);
+        }
+        positionOld = transform.position;
+    }
+
+    public void ExitPortal () {
+        if (teleportedToLinkedPortalLastFrame) {
+            teleportedToLinkedPortalLastFrame = false;
+        } else {
+            SetSliceParams (Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero);
+            GameObject.Destroy (mirrorGraphicObject);
+        }
+
+    }
 
     public virtual void SetSliceParams (Vector3 sliceNormal, Vector3 slicePoint, Vector3 mirrorSliceNormal, Vector3 mirrorSlicePoint) {
         Slice (sliceNormal, slicePoint, graphicObject);

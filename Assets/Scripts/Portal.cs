@@ -16,7 +16,7 @@ public class Portal : MonoBehaviour {
         portalCam = GetComponentInChildren<Camera> ();
     }
 
-    void Start () {
+    protected virtual void Start () {
         collisionPlane = new Plane (transform.forward, transform.position);
     }
 

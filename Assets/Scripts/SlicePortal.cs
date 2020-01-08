@@ -4,65 +4,59 @@ using UnityEngine;
 
 public class SlicePortal : Portal {
 
-    PortalEntity entity;
+    List<Interdimensional> trackedEntities;
+
+    protected override void Start () {
+        base.Start ();
+        trackedEntities = new List<Interdimensional> ();
+    }
 
     protected override void LateUpdate () {
         base.LateUpdate ();
 
-        if (entity != null) {
-            var relativePosition = entity.interdimensionalObject.graphicObject.transform.position - transform.position;
-            entity.interdimensionalObject.mirrorGraphicObject.transform.position = linkedPortal.transform.position + relativePosition;
-
-            bool enteringPositiveSide = Vector3.Dot (transform.forward, relativePosition) > 0;
-            int a = (enteringPositiveSide) ? -1 : 1;
-            entity.interdimensionalObject.SetSliceParams (transform.forward * a, transform.position, linkedPortal.transform.forward * -a, linkedPortal.transform.position);
-
-            if (!collisionPlane.SameSide (entity.Position, entity.positionOld)) {
-                entity.transportedToLinkedPortal = true;
-                GameObject.Destroy (entity.interdimensionalObject.mirrorGraphicObject);
-                entity.interdimensionalObject.transform.position = linkedPortal.transform.position + relativePosition;
-                entity = null;
-            } else {
-                entity.positionOld = entity.interdimensionalObject.transform.position;
+        foreach (var entity in trackedEntities) {
+            if (entity != null) {
+                UpdateEntity (entity);
             }
         }
+
+    }
+
+    void UpdateEntity (Interdimensional entity) {
+
+        var relativePosition = entity.graphicObject.transform.position - transform.position;
+        entity.mirrorGraphicObject.transform.position = linkedPortal.transform.position + relativePosition;
+
+        bool enteringPositiveSide = Vector3.Dot (transform.forward, relativePosition) > 0;
+        int side = (enteringPositiveSide) ? -1 : 1;
+        entity.SetSliceParams (transform.forward * side, transform.position, linkedPortal.transform.forward * -side, linkedPortal.transform.position);
+
+        // Centre of entity has moved across portal
+        if (!collisionPlane.SameSide (entity.transform.position, entity.positionOld)) {
+            entity.teleportedToLinkedPortalLastFrame = true;
+            entity.mirrorGraphicObject.transform.position = entity.transform.position;
+            entity.transform.position = linkedPortal.transform.position + relativePosition;
+        } else {
+            entity.positionOld = entity.transform.position;
+        }
+
     }
 
     void OnTriggerEnter (Collider c) {
         if (c.gameObject.GetComponent<Interdimensional> ()) {
-            entity = new PortalEntity (c.gameObject.GetComponent<Interdimensional> ());
-            entity.interdimensionalObject.mirrorGraphicObject = Instantiate (entity.interdimensionalObject.graphicObject);
+            var entity = c.gameObject.GetComponent<Interdimensional> ();
+            trackedEntities.Add (entity);
+            entity.EnterPortal ();
+
         }
     }
 
     void OnTriggerExit (Collider c) {
-        if (entity != null) {
-            if (!entity.transportedToLinkedPortal) {
-                entity.interdimensionalObject.SetSliceParams (Vector3.zero, Vector3.zero, Vector3.zero, Vector3.zero);
-                GameObject.Destroy (entity.interdimensionalObject.mirrorGraphicObject);
-            }
-            entity = null;
-        }
-    }
-
-    class PortalEntity {
-        public Interdimensional interdimensionalObject;
-        public Vector3 positionOld;
-        public bool transportedToLinkedPortal;
-
-        public PortalEntity (Interdimensional interdimensionalObject) {
-            this.interdimensionalObject = interdimensionalObject;
-            positionOld = interdimensionalObject.transform.position;
+        if (c.gameObject.GetComponent<Interdimensional> ()) {
+            var entity = c.gameObject.GetComponent<Interdimensional> ();
+            entity.ExitPortal ();
+            trackedEntities.Remove (entity);
         }
 
-        public Vector3 Position {
-            get {
-                return interdimensionalObject.transform.position;
-            }
-        }
-
-        public void Update () {
-
-        }
     }
 }
