@@ -43,4 +43,10 @@ public class Portal : MonoBehaviour {
             linkedPortal.SetRenderTarget (displayTexture);
         }
     }
+
+    void OnValidate () {
+        if (linkedPortal != null && linkedPortal.linkedPortal != this) {
+            linkedPortal.linkedPortal = this;
+        }
+    }
 }
