@@ -30,6 +30,9 @@ public class FPSController : MonoBehaviour {
     Vector3 rotationSmoothVelocity;
     Vector3 currentRotation;
 
+    bool jumping;
+    float lastGroundedTime;
+
     void Start () {
         cam = Camera.main;
         if (lockCursor) {
@@ -57,11 +60,15 @@ public class FPSController : MonoBehaviour {
 
         var flags = controller.Move (velocity * Time.deltaTime);
         if (flags == CollisionFlags.Below) {
+            jumping = false;
+            lastGroundedTime = Time.time;
             verticalVelocity = 0;
         }
 
         if (Input.GetKeyDown (KeyCode.Space)) {
-            if (controller.isGrounded) {
+            float timeSinceLastTouchedGround = Time.time - lastGroundedTime;
+            if (controller.isGrounded || (!jumping && timeSinceLastTouchedGround < 0.15f)) {
+                jumping = true;
                 verticalVelocity = jumpForce;
             }
         }
