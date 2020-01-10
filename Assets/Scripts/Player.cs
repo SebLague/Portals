@@ -22,10 +22,12 @@ public class Player : MonoBehaviour {
     }
 
     void Update () {
+        if (portalCollider == null || portalCollider == null) {
+            return;
+        }
         Vector3 posNew = GetCamNearClipCentre ();
         Plane plane = new Plane (portalCollider.transform.forward, portalCollider.transform.position);
         float colliderDepth = portalCollider.size.z;
-    
 
         if (!plane.SameSide (posOld, posNew)) {
             float dstTravelled = (posNew - posOld).magnitude;
