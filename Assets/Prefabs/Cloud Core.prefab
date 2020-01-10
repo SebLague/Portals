@@ -43,8 +43,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: db15b84628c064d438b71d1239b2e7a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  falloffDstHorizontal: 5
-  falloffVertical: 1.5
-  maxScale: 2
-  rotSpeedMinMax: {x: 10, y: 20}
+  falloffDstHorizontal: 8
+  falloffVertical: 2
+  maxScale: 3
+  rotSpeedMinMax: {x: 5, y: 10}
   myTransform: {fileID: 0}
