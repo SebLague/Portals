@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class CloudTest : MonoBehaviour {
     public int numViewDirections = 100;
+    public int numClouds = 10;
     public float scale = 1;
     public float spawnRadius = 10;
     [Range (0, 1)]
     public float startHeight;
     public GameObject cloudPrefab;
+    public GameObject cloudCorePrefab;
 
     void Start () {
 
@@ -26,6 +28,18 @@ public class CloudTest : MonoBehaviour {
 
             var g = Instantiate (cloudPrefab, new Vector3 (x, y, z) * spawnRadius, Quaternion.identity);
             g.transform.localScale = Vector3.one * scale;
+        }
+
+        for (int i = 0; i < numClouds; i++) {
+            float t = Random.value;
+            float inclination = Mathf.Acos (1 - (1 - startHeight) * t);
+            float azimuth = angleIncrement * i;
+
+            float x = Mathf.Sin (inclination) * Mathf.Sin (azimuth);
+            float y = Mathf.Cos (inclination);
+            float z = Mathf.Sin (inclination) * Mathf.Cos (azimuth);
+
+            var g = Instantiate (cloudCorePrefab, new Vector3 (x, y, z) * spawnRadius, Quaternion.identity);
         }
     }
 }
