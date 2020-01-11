@@ -197,6 +197,11 @@ PrefabInstance:
       propertyPath: linkedPortal
       value: 
       objectReference: {fileID: 675617661}
+    - target: {fileID: 4521745268046156503, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5, type: 3}
 --- !u!1 &52394889
@@ -1434,6 +1439,78 @@ Transform:
   m_Father: {fileID: 1190771719}
   m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &755513317 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4521745269043407644, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1961010806}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &755513318 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4521745269043407641, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+    type: 3}
+  m_PrefabInstance: {fileID: 1961010806}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &755513320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 755513317}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeTrigger: {fileID: 755513318}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 2
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 0
+  m_ShowCustomSorter: 0
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!1 &810995634
 GameObject:
   m_ObjectHideFlags: 0
@@ -2230,6 +2307,78 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1437953329}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &1486535025 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4521745269043407644, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8456043}
+  m_PrefabAsset: {fileID: 0}
+--- !u!4 &1486535026 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4521745269043407641, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+    type: 3}
+  m_PrefabInstance: {fileID: 8456043}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1486535028
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1486535025}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 948f4100a11a5c24981795d21301da5c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volumeTrigger: {fileID: 1486535026}
+  volumeLayer:
+    serializedVersion: 2
+    m_Bits: 512
+  stopNaNPropagation: 1
+  finalBlitToCameraTarget: 0
+  antialiasingMode: 2
+  temporalAntialiasing:
+    jitterSpread: 0.75
+    sharpness: 0.25
+    stationaryBlending: 0.95
+    motionBlending: 0.85
+  subpixelMorphologicalAntialiasing:
+    quality: 2
+  fastApproximateAntialiasing:
+    fastMode: 0
+    keepAlpha: 0
+  fog:
+    enabled: 1
+    excludeSkybox: 1
+  debugLayer:
+    lightMeter:
+      width: 512
+      height: 256
+      showCurves: 1
+    histogram:
+      width: 512
+      height: 256
+      channel: 3
+    waveform:
+      exposure: 0.12
+      height: 256
+    vectorscope:
+      size: 256
+      exposure: 0.12
+    overlaySettings:
+      linearDepth: 0
+      motionColorIntensity: 4
+      motionGridSize: 64
+      colorBlindnessType: 0
+      colorBlindnessStrength: 1
+  m_Resources: {fileID: 11400000, guid: d82512f9c8e5d4a4d938b575d47f88d4, type: 2}
+  m_ShowToolkit: 0
+  m_ShowCustomSorter: 0
+  breakBeforeColorGrading: 0
+  m_BeforeTransparentBundles: []
+  m_BeforeStackBundles: []
+  m_AfterStackBundles: []
 --- !u!1 &1490773953
 GameObject:
   m_ObjectHideFlags: 0
@@ -3061,7 +3210,7 @@ PrefabInstance:
     - target: {fileID: 4521745267709037656, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 3
+      value: 2.09
       objectReference: {fileID: 0}
     - target: {fileID: 4521745267709037656, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
         type: 3}
@@ -3108,6 +3257,11 @@ PrefabInstance:
       propertyPath: portalCollider
       value: 
       objectReference: {fileID: 2141737514}
+    - target: {fileID: 4521745268046156503, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5,
+        type: 3}
+      propertyPath: m_Layer
+      value: 0
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7b1cdb58ff36b45d9bdeff448d62fdc5, type: 3}
 --- !u!1 &2009033179
@@ -3383,7 +3537,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1939129042, guid: 5101aee443b6c4e028aae23d799c5fa4, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1939129043, guid: 5101aee443b6c4e028aae23d799c5fa4, type: 3}
       propertyPath: volumeLayer.m_Bits

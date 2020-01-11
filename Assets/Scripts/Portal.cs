@@ -52,10 +52,11 @@ public class Portal : MonoBehaviour {
         // Immediately update cam pos + the depth of linked portal graphic in case player is entering the portal backwards
         UpdateCameraPosition ();
         linkedPortal.UpdateGraphicDepth ();
+        linkedPortal.posOld = position;
     }
 
     void SetNearClipPlane () {
-        //return;
+        return;
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
