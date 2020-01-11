@@ -33,7 +33,7 @@ public class Portal : MonoBehaviour {
             float dstTravelled = (posNew - posOld).magnitude;
             Vector3 dir = (posNew - posOld) / dstTravelled;
 
-            if (portalCollider.Raycast (new Ray (posOld - dir * 10, dir), out _, dstTravelled + 10)) {
+            if (portalCollider.Raycast (new Ray (posOld - dir * 2, dir), out _, dstTravelled + 2)) {
                 Vector3 portalOffset = player.transform.position - portalCollider.transform.position;
                 Debug.Log ("Went through portal: " + linkedPortal.transform.position + portalOffset);
 
@@ -50,13 +50,14 @@ public class Portal : MonoBehaviour {
         player.Teleport (position);
 
         // Immediately update cam pos + the depth of linked portal graphic in case player is entering the portal backwards
-        UpdateCameraPosition ();
+        //UpdateCameraPosition ();
+
         linkedPortal.UpdateGraphicDepth ();
         linkedPortal.posOld = position;
     }
 
     void SetNearClipPlane () {
-        return;
+        //return;
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
@@ -66,11 +67,17 @@ public class Portal : MonoBehaviour {
 
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
         Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
-        Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, -Vector3.Dot (camSpacePos, camSpaceNormal));
+        float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal);
+        if (Mathf.Abs (camSpaceDst) > 0.01f) {
+            Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDst);
 
-        // Update projection based on new clip plane
-        // Calculate matrix with player cam because seem to get weird results calculating it with the already-modifed cam
-        portalCam.projectionMatrix = playerCam.CalculateObliqueMatrix (clipPlaneCameraSpace);
+            // Update projection based on new clip plane
+            // Calculate matrix with player cam so that player camera settings (fov etc) are used
+            portalCam.projectionMatrix = playerCam.CalculateObliqueMatrix (clipPlaneCameraSpace);
+        } else {
+            Debug.Log (camSpaceDst);
+            portalCam.projectionMatrix = playerCam.projectionMatrix;
+        }
     }
 
     public void SetRenderTarget (RenderTexture targetTexture) {
@@ -78,11 +85,11 @@ public class Portal : MonoBehaviour {
     }
 
     protected virtual void LateUpdate () {
+        TrackPlayer ();
 
         UpdateRenderTexture ();
         UpdateCameraPosition ();
         SetNearClipPlane ();
-        TrackPlayer ();
         UpdateGraphicDepth ();
     }
 
@@ -95,8 +102,13 @@ public class Portal : MonoBehaviour {
     }
 
     void UpdateGraphicDepth () {
+
+        float halfHeight = playerCam.nearClipPlane * Mathf.Tan (playerCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
+        float halfWidth = halfHeight * playerCam.aspect;
+        float dst = Mathf.Sqrt (halfHeight * halfHeight + halfWidth * halfWidth + playerCam.nearClipPlane * playerCam.nearClipPlane);
+
         float portalMeshDepth = 0.001f;
-        float portalExtendDepth = playerCam.nearClipPlane + 0.1f;
+        float portalExtendDepth = dst;
 
         float playerSqrDstToPortal = (portalCollider.ClosestPoint (player.transform.position) - player.transform.position).sqrMagnitude;
         if (playerSqrDstToPortal <= playerCam.nearClipPlane) {
