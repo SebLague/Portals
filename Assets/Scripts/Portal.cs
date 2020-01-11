@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 public class Portal : MonoBehaviour {
-
-    public bool log;
+    
     RenderTexture displayTexture;
     public Portal linkedPortal;
     public MeshRenderer portalMesh;
@@ -26,10 +25,8 @@ public class Portal : MonoBehaviour {
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
         Transform plane = transform;
-        int dot = (Vector3.Dot (portalCam.transform.forward, plane.forward) < 0) ? -1 : 1;
-        if (log) {
-            Debug.Log(Vector3.Dot (portalCam.transform.forward, plane.forward));
-        }
+
+        int dot = (Vector3.Dot (transform.position - portalCam.transform.position, plane.forward) < 0) ? -1 : 1;
 
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
         Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
