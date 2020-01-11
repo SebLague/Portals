@@ -7,8 +7,18 @@ ModelImporter:
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
+      name: Building
+    second: {fileID: 2100000, guid: e5bc8b92e2f6f475dbf84f92980c9836, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
       name: Centre
     second: {fileID: 2100000, guid: 48d92918da72d4110a37071a2f47bb1f, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Lampost
+    second: {fileID: 2100000, guid: 6a100de249fdd40d3a83f3b01f919cce, type: 2}
   - first:
       type: UnityEngine:Material
       assembly: UnityEngine.CoreModule
@@ -24,6 +34,21 @@ ModelImporter:
       assembly: UnityEngine.CoreModule
       name: Sky
     second: {fileID: 2100000, guid: 8d5fa6a0d145f401fb20dc953eb94c91, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Streetlight
+    second: {fileID: 2100000, guid: d7544302edb084adbb0465032fabb176, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Window Frame
+    second: {fileID: 2100000, guid: 8312bb8198e544b2885b7632212dcd14, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: Windows
+    second: {fileID: 2100000, guid: 7790f2e5c71ac44228cff7144881a88c, type: 2}
   materials:
     importMaterials: 1
     materialName: 0

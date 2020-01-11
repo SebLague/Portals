@@ -9,7 +9,7 @@ public class ObliqueProjectionTest : MonoBehaviour {
     public Camera extra;
 
     void LateUpdate () {
-        // From http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
+        // http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         if (plane) {
             Camera cam = Camera.main;
 

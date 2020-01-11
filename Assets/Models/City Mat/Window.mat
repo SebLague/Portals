@@ -7,10 +7,10 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: City Sky
-  m_Shader: {fileID: 4800000, guid: 3c1455edc49af4cc49c1cae67fb2dba3, type: 3}
-  m_ShaderKeywords: 
-  m_LightmapFlags: 4
+  m_Name: Window
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _EMISSION
+  m_LightmapFlags: 1
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -73,8 +73,5 @@ Material:
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 0, g: 0, b: 0, a: 1}
-    - _ColorA: {r: 0.26415092, g: 0.13332146, b: 0.13332146, a: 1}
-    - _ColorB: {r: 0.18361405, g: 0.058561757, b: 0.26415092, a: 1}
-    - _ColorC: {r: 0, g: 0, b: 0, a: 1}
-    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _Color: {r: 0.25231397, g: 0.5621199, b: 0.8490566, a: 1}
+    - _EmissionColor: {r: 1.1486983, g: 0.93247277, b: 0.40992764, a: 1}
