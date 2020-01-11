@@ -47,6 +47,9 @@ public class FPSController : MonoBehaviour {
         if (Input.GetKeyDown (KeyCode.P)) {
             Debug.Break ();
         }
+        if (Input.GetKeyDown (KeyCode.O)) {
+            this.enabled = false;
+        }
         Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
         Vector3 inputDir = new Vector3 (input.x, 0, input.y).normalized;
         Vector3 worldInputDir = transform.TransformDirection (inputDir);

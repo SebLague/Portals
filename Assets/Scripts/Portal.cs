@@ -55,7 +55,7 @@ public class Portal : MonoBehaviour {
     }
 
     void SetNearClipPlane () {
-        return;
+        //return;
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
@@ -94,7 +94,7 @@ public class Portal : MonoBehaviour {
     }
 
     void UpdateGraphicDepth () {
-        float portalMeshDepth = 0.1f;
+        float portalMeshDepth = 0.001f;
         float portalExtendDepth = playerCam.nearClipPlane + 0.1f;
 
         float playerSqrDstToPortal = (portalCollider.ClosestPoint (player.transform.position) - player.transform.position).sqrMagnitude;
