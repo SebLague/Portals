@@ -6,19 +6,19 @@ using UnityEngine;
 public class Master : MonoBehaviour {
 
     public Shader shader;
-    public RenderTexture portalTexture;
-    public Color tint;
-    public BoxCollider portalVolumeA;
+    public Transform box;
     Material mat;
 
     void OnRenderImage (RenderTexture src, RenderTexture dest) {
         if (mat == null || mat.shader != shader) {
             mat = new Material (shader);
         }
-        mat.SetTexture ("portalTexture", portalTexture);
-        mat.SetColor ("tint", tint);
-       
-        
+        //mat.SetTexture ("portalTexture", portalTexture);
+        //mat.SetColor ("tint", tint);
+        mat.SetMatrix ("boxMatrix", box.worldToLocalMatrix);
+        //mat.SetMatrix ("boxMatrix", Matrix4x4.Rotate(Quaternion.Inverse(box.rotation)));
+
         Graphics.Blit (src, dest, mat);
     }
+
 }
