@@ -40,20 +40,24 @@ public class Portal : MonoBehaviour {
                 TeleportPlayer (linkedPortal.transform.position + portalOffset);
 
             } else {
-                Debug.Log ("Went passed portal");
+                //Debug.Log ("Went passed portal");
             }
         }
         posOld = player.transform.position;
     }
 
     void TeleportPlayer (Vector3 position) {
-        player.Teleport (position);
-
+        var mirrorMatrix = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * player.transform.localToWorldMatrix;
+        Vector3 teleportPos = mirrorMatrix.GetColumn (3);
+        Quaternion teleportRot = mirrorMatrix.rotation;
+        //portalCam.transform.SetPositionAndRotation (mirrorMatrix.GetColumn (3), mirrorMatrix.rotation);
+        //player.Teleport (teleportPos, teleportRot);
+        player.Teleport (transform, linkedPortal.transform);
         // Immediately update cam pos + the depth of linked portal graphic in case player is entering the portal backwards
         //UpdateCameraPosition ();
 
         linkedPortal.UpdateGraphicDepth ();
-        linkedPortal.posOld = position;
+        linkedPortal.posOld = teleportPos;
     }
 
     void SetNearClipPlane () {
@@ -94,6 +98,9 @@ public class Portal : MonoBehaviour {
     }
 
     void UpdateCameraPosition () {
+        var mirrorMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * playerCam.transform.localToWorldMatrix;
+        portalCam.transform.SetPositionAndRotation (mirrorMatrix.GetColumn (3), mirrorMatrix.rotation);
+        return;
         Vector3 playerOffsetToLinkedPortal = playerCam.transform.position - linkedPortal.transform.position;
         Vector3 localOffset = linkedPortal.transform.InverseTransformVector (playerOffsetToLinkedPortal);
 

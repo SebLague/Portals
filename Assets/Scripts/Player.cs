@@ -37,7 +37,7 @@ public class Player : MonoBehaviour {
             if (portalCollider.Raycast (new Ray (posOld - dir * colliderDepth, dir), out _, dstTravelled + colliderDepth)) {
                 Vector3 portalOffset = transform.position - portalCollider.transform.position;
                 Debug.Log ("Went through portal (player): " + (linkedPortal.transform.position + portalOffset));
-                controller.Teleport (linkedPortal.position + portalOffset);
+                //controller.Teleport (linkedPortal.position + portalOffset);
 
             } else {
                 Debug.Log ("Went passed portal");

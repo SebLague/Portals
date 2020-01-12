@@ -87,9 +87,32 @@ public class FPSController : MonoBehaviour {
 
     }
 
-    public void Teleport (Vector3 pos) {
+    public void Teleport (Transform fromPortal, Transform toPortal) {
+        var mirrorMatrix = toPortal.transform.localToWorldMatrix * fromPortal.worldToLocalMatrix * transform.localToWorldMatrix;
+        Vector3 teleportPos = mirrorMatrix.GetColumn (3);
+        Quaternion teleportRot = mirrorMatrix.rotation;
+
+        controller.enabled = false;
+        transform.position = teleportPos;
+
+        Vector3 eulerRot = mirrorMatrix.rotation.eulerAngles;
+        yaw = eulerRot.y;
+        smoothYaw = yaw;
+        transform.eulerAngles = Vector3.up * smoothYaw;
+        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+
+        controller.enabled = true;
+    }
+
+    public void Teleport (Vector3 pos, Quaternion rot) {
         controller.enabled = false;
         transform.position = pos;
+
+        Vector3 eulerRot = rot.eulerAngles;
+        yaw = eulerRot.y;
+        smoothYaw = yaw;
+        transform.eulerAngles = Vector3.up * smoothYaw;
+
         controller.enabled = true;
     }
 
