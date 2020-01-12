@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Portal : MonoBehaviour {
 
-    RenderTexture displayTexture;
+    public RenderTexture displayTexture {get; private set;}
     public Portal linkedPortal;
     public MeshRenderer portalMesh;
     public BoxCollider portalCollider;

@@ -66,13 +66,14 @@
                 return output;
             }
 
+            sampler2D _CameraDepthTexture;
             sampler2D _MainTex;
             sampler2D portalTexture;
             float4 tint;
 
-            bool hit(float3 pos, float3 dir) {
+            bool hit(float3 pos, float3 dir, float depth) {
                 float2 res = rayBoxDst(-.5, 0.5,mul(boxMatrix, float4(pos,1)), 1/mul(boxMatrix, float4(dir,0)));
-                return res.y > 0;
+                return res.y > 0 && res.x < depth;
 
             }
 
@@ -83,11 +84,14 @@
                 float viewLength = length(i.viewVector);
                 float3 rayDir = i.viewVector / viewLength;
 
+                float nonlin_depth = SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv);
+                float depth = LinearEyeDepth(nonlin_depth) * viewLength;
+
                 fixed4 col = tex2D(_MainTex, i.uv);
                 //fixed4 portalCol = tex2D(portalTexture, i.uv);
 
-                if (hit(rayPos, rayDir)) {
-                    col = float4(1,1,1,0);
+                if (hit(rayPos, rayDir, depth)) {
+                    col = tex2D(portalTexture, i.uv);
                 }
                 return col;
             }
