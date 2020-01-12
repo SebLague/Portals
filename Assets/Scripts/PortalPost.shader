@@ -14,6 +14,8 @@
             CGPROGRAM
             #pragma vertex vert
             #pragma fragment frag
+            #pragma target 3.5
+            #pragma require 2darray
 
             #include "UnityCG.cginc"
 
@@ -29,7 +31,9 @@
                 float3 viewVector : TEXCOORD1;
             };
 
-            float4x4 boxMatrix;
+            float4x4 screenMatrices[10];
+            UNITY_DECLARE_TEX2DARRAY(screenTextures);
+            int numScreens;
 
             // Returns (dstToBox, dstInsideBox). If ray misses box, dstInsideBox will be zero
             float2 rayBoxDst(float3 boundsMin, float3 boundsMax, float3 rayOrigin, float3 invRaydir) {
@@ -71,7 +75,7 @@
             sampler2D portalTexture;
             float4 tint;
 
-            bool hit(float3 pos, float3 dir, float depth) {
+            bool hit(float3 pos, float3 dir, float depth, float4x4 boxMatrix) {
                 float2 res = rayBoxDst(-.5, 0.5,mul(boxMatrix, float4(pos,1)), 1/mul(boxMatrix, float4(dir,0)));
                 return res.y > 0 && res.x < depth;
 
@@ -88,11 +92,16 @@
                 float depth = LinearEyeDepth(nonlin_depth) * viewLength;
 
                 fixed4 col = tex2D(_MainTex, i.uv);
+                return UNITY_SAMPLE_TEX2DARRAY(screenTextures, float3(i.uv.xy, 1));
                 //fixed4 portalCol = tex2D(portalTexture, i.uv);
-
-                if (hit(rayPos, rayDir, depth)) {
-                    col = tex2D(portalTexture, i.uv);
+                
+                for (int screenIndex = 0; screenIndex < numScreens; screenIndex ++) {
+                    if (hit(rayPos, rayDir, depth, screenMatrices[screenIndex])) {//
+                       // col = tex2D(portalTexture, i.uv);
+                       col = UNITY_SAMPLE_TEX2DARRAY(screenTextures, float3(i.uv.xy, screenIndex));
+                    }
                 }
+                
                 return col;
             }
             ENDCG
