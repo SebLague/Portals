@@ -32,7 +32,7 @@ public class PortalScreenRender : MonoBehaviour {
             }
             texture = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.ARGB32);
             texture.Create ();
-            depthTexture = new RenderTexture (Screen.width, Screen.height, 24, RenderTextureFormat.Depth);
+            depthTexture = new RenderTexture (Screen.width, Screen.height, 32, RenderTextureFormat.Depth);
             depthTexture.Create ();
             //GetComponent<Camera> ().targetTexture = texture;
             // GetComponent<Camera> ().SetTargetBuffers (texture.colorBuffer, texture.depthBuffer);

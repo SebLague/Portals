@@ -61,12 +61,11 @@ public class Portal : MonoBehaviour {
     }
 
     void SetNearClipPlane () {
-        //return;
+        return;
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
         Transform plane = transform;
-        Debug.Log("Set plane");
         int dot = (Vector3.Dot (transform.position - portalCam.transform.position, plane.forward) < 0) ? -1 : 1;
 
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
