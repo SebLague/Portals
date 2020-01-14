@@ -63,7 +63,7 @@
                 
                 //return portalCol;
                 //return sceneCol;
-                return (portalDepth < sceneDepth+.1) ? portalCol : sceneCol;
+                return (portalDepth < sceneDepth) ? portalCol : sceneCol;
             }
             ENDCG
         }
