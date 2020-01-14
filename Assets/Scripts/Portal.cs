@@ -1,13 +1,12 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class Portal : MonoBehaviour {
 
-    public RenderTexture screenTexture { get; private set; }
+    RenderTexture displayTexture;
     public Portal linkedPortal;
-    public Transform screenMesh;
+    public MeshRenderer portalMesh;
     public BoxCollider portalCollider;
     Camera playerCam;
     Camera portalCam;
@@ -85,21 +84,8 @@ public class Portal : MonoBehaviour {
         }
     }
 
-    public void Render (RenderTexture texture, int sliceIndex) {
-        if (portalCam == null) {
-            portalCam = transform.GetComponentInChildren<Camera> ();
-        }
-
-        portalCam.targetTexture = texture;
-
-        Graphics.SetRenderTarget (texture, 0, CubemapFace.Unknown, 1);
-        portalCam.Render ();
-        Graphics.SetRenderTarget (texture, 0, CubemapFace.Unknown, 1);
-
-    }
-
     public void SetRenderTarget (RenderTexture targetTexture) {
-        //portalCam.targetTexture = targetTexture;
+        portalCam.targetTexture = targetTexture;
     }
 
     protected virtual void LateUpdate () {
@@ -134,22 +120,22 @@ public class Portal : MonoBehaviour {
         float playerSqrDstToPortal = (portalCollider.ClosestPoint (player.transform.position) - player.transform.position).sqrMagnitude;
         if (playerSqrDstToPortal <= playerCam.nearClipPlane) {
             int dir = (Vector3.Dot (transform.forward, transform.position - player.transform.position) < 0) ? -1 : 1;
-            screenMesh.transform.localScale = new Vector3 (screenMesh.transform.localScale.x, screenMesh.transform.localScale.y, portalExtendDepth + portalMeshDepth);
-            screenMesh.transform.localPosition = Vector3.forward * portalExtendDepth / 2 * dir;
+            portalMesh.transform.localScale = new Vector3 (portalMesh.transform.localScale.x, portalMesh.transform.localScale.y, portalExtendDepth + portalMeshDepth);
+            portalMesh.transform.localPosition = Vector3.forward * portalExtendDepth / 2 * dir;
         } else {
-            screenMesh.transform.localScale = new Vector3 (screenMesh.transform.localScale.x, screenMesh.transform.localScale.y, portalMeshDepth);
-            screenMesh.transform.localPosition = Vector3.zero;
+            portalMesh.transform.localScale = new Vector3 (portalMesh.transform.localScale.x, portalMesh.transform.localScale.y, portalMeshDepth);
+            portalMesh.transform.localPosition = Vector3.zero;
         }
     }
 
     void UpdateRenderTexture () {
-        if (screenTexture == null || screenTexture.width != Screen.width || screenTexture.height != Screen.height) {
-            if (screenTexture != null) {
-                screenTexture.Release ();
+        if (displayTexture == null || displayTexture.width != Screen.width || displayTexture.height != Screen.height) {
+            if (displayTexture != null) {
+                displayTexture.Release ();
             }
-            screenTexture = new RenderTexture (Screen.width, Screen.height, 0);
-            //portalMesh.material.SetTexture ("_MainTex", displayTexture);
-            linkedPortal.SetRenderTarget (screenTexture);
+            displayTexture = new RenderTexture (Screen.width, Screen.height, 0);
+            portalMesh.material.SetTexture ("_MainTex", displayTexture);
+            linkedPortal.SetRenderTarget (displayTexture);
         }
     }
 
