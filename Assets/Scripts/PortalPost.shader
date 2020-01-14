@@ -62,6 +62,7 @@
                 float sceneDepth = LinearEyeDepth(SAMPLE_DEPTH_TEXTURE(_CameraDepthTexture, i.uv)) * viewLength;
                 
                 //return portalCol;
+                //return sceneCol;
                 return (portalDepth < sceneDepth) ? portalCol : sceneCol;
             }
             ENDCG
