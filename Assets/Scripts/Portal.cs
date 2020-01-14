@@ -132,7 +132,7 @@ public class Portal : MonoBehaviour {
             if (displayTexture != null) {
                 displayTexture.Release ();
             }
-            displayTexture = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.Default);
+            displayTexture = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.DefaultHDR);
             Debug.Log ("Create");
             portalMesh.material.SetTexture ("_MainTex", displayTexture);
             linkedPortal.SetRenderTarget (displayTexture);
