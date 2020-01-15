@@ -7,48 +7,74 @@ public class ProjectionTest : MonoBehaviour {
     public MeshFilter meshFilterA;
     public MeshFilter meshFilterB;
     public bool divideByW;
+    public bool divideByZ;
+    public bool dropZ;
     [Range (0, 1)]
     public float projectPercent = 1;
     [Range (0, 1)]
     public float aspectCorrectPercent = 0;
+    Vector3[] vertsA;
 
-    void Start () {
-
+    void Awake () {
+        vertsA = meshFilterA.mesh.vertices;
+        //Debug.Log (Camera.main.projectionMatrix);
     }
 
-    // Update is called once per frame
     void Update () {
+        RunOptim ();
+    }
+
+    void RunOptim () {
         Camera cam = Camera.main;
 
-        var meshA = meshFilterA.mesh;
-        var meshB = meshFilterB.mesh;
-        Vector3[] newVerts = meshB.vertices;
-
-        // to cam/view space
+        Vector3[] newVerts = new Vector3[vertsA.Length];
+        var worldToCam = cam.worldToCameraMatrix;
+        var projectionMatrix = cam.projectionMatrix;
 
         // to projection space
-        for (int i = 0; i < meshB.vertices.Length; i++) {
-            //var worldVert = (Vector3)(meshFilterA.transform.localToWorldMatrix * meshA.vertices[i]);
-            var worldVert = meshFilterA.transform.TransformPoint (meshA.vertices[i]);
-            var viewSpaceVert = cam.worldToCameraMatrix * worldVert;
+        for (int i = 0; i < vertsA.Length; i++) {
+            //var worldVert = meshFilterA.transform.TransformPoint (vertsA[i]);
+            Vector4 worldVert = meshFilterA.transform.localToWorldMatrix * new Vector4 (vertsA[i].x, vertsA[i].y, vertsA[i].z, 1);
+            Vector4 viewSpaceVert = worldToCam * worldVert;
 
             // aspect correct test:
-            var centreView = cam.worldToCameraMatrix * meshFilterA.transform.position;
-            float s = Mathf.Lerp (1, Screen.width / (float)Screen.height, aspectCorrectPercent);
-            var corrected = new Vector3 ((viewSpaceVert.x - centreView.x) * s + centreView.x, viewSpaceVert.y, viewSpaceVert.z);
+            //var centreView = worldToCam * meshFilterA.transform.position;
+            //float s = Mathf.Lerp (1, Screen.width / (float) Screen.height, aspectCorrectPercent);
+            //var corrected = new Vector3 ((viewSpaceVert.x - centreView.x) * s + centreView.x, viewSpaceVert.y, viewSpaceVert.z);
 
-            //var projectionSpaceVert = cam.projectionMatrix * viewSpaceVert;
-            var projectionSpaceVert = cam.projectionMatrix * corrected;
+            Vector4 projectionSpaceVert = cam.projectionMatrix * viewSpaceVert;
+            //var projectionSpaceVert = projectionMatrix * corrected;
+            //newVerts[i] = projectionSpaceVert / projectionSpaceVert.w;
 
-            newVerts[i] = projectionSpaceVert / ((divideByW) ? projectionSpaceVert.w : 1);
+            if (divideByZ) {
+                newVerts[i] = projectionSpaceVert / projectionSpaceVert.z;
+            }
+            if (divideByW) {
+                newVerts[i] = projectionSpaceVert / projectionSpaceVert.w;
+            }
+            if (divideByZ && divideByW) {
+                newVerts[i] = projectionSpaceVert / projectionSpaceVert.w / projectionSpaceVert.z;
+            }
+            if (dropZ) {
+                newVerts[i] = new Vector3 (newVerts[i].x, newVerts[i].y, 1);
+            }
             newVerts[i] = Vector3.Lerp (worldVert, newVerts[i], projectPercent);
 
         }
-        meshB.vertices = newVerts;
-
+        meshFilterB.mesh.vertices = newVerts;
     }
 
     void OnDrawGizmos () {
-        Gizmos.DrawWireCube (Vector3.forward, new Vector3 (Mathf.Lerp (1, Screen.width / (float)Screen.height, aspectCorrectPercent), 1, 0));
+        var m = Gizmos.matrix;
+        var cam = Camera.main;
+        Gizmos.matrix = cam.transform.localToWorldMatrix;
+        Gizmos.DrawFrustum (cam.transform.position, cam.fieldOfView, cam.farClipPlane, cam.nearClipPlane, cam.aspect);
+        Gizmos.matrix = m;
+
+        float s = Mathf.Lerp (1, Camera.main.pixelWidth / (float) Camera.main.pixelHeight, aspectCorrectPercent);
+        Gizmos.color = new Color (1, 0, 0, 0.5f);
+        Gizmos.DrawWireCube (Vector3.forward, new Vector3 (2, 2, 0));
+        Gizmos.color = new Color (1, 1, 0, 0.5f);
+        Gizmos.DrawWireCube (Vector3.zero, Vector3.one * 2);
     }
 }
