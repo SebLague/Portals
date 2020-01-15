@@ -61,7 +61,7 @@ public class Portal : MonoBehaviour {
     }
 
     void SetNearClipPlane () {
-        //return;
+        
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
@@ -133,7 +133,6 @@ public class Portal : MonoBehaviour {
                 displayTexture.Release ();
             }
             displayTexture = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.DefaultHDR);
-            Debug.Log ("Create");
             portalMesh.material.SetTexture ("_MainTex", displayTexture);
             linkedPortal.SetRenderTarget (displayTexture);
         }
