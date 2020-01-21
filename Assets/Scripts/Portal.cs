@@ -77,6 +77,7 @@ public class Portal : MonoBehaviour {
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
         Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
         float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal);
+        // Don't use oblique clip plane if very close to portal as this can cause some visual artifacts
         if (Mathf.Abs (camSpaceDst) > 0.02f) {
             Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDst);
 
@@ -97,24 +98,12 @@ public class Portal : MonoBehaviour {
         TrackPlayer ();
 
         UpdateRenderTexture ();
-        UpdateCameraPosition ();
-        SetNearClipPlane ();
+
         UpdateGraphicDepth ();
     }
 
-    void UpdateCameraPosition () {
-        var mirrorMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * playerCam.transform.localToWorldMatrix;
-        portalCam.transform.SetPositionAndRotation (mirrorMatrix.GetColumn (3), mirrorMatrix.rotation);
-        return;
-        Vector3 playerOffsetToLinkedPortal = playerCam.transform.position - linkedPortal.transform.position;
-        Vector3 localOffset = linkedPortal.transform.InverseTransformVector (playerOffsetToLinkedPortal);
-
-        portalCam.transform.position = transform.position + transform.TransformVector (playerOffsetToLinkedPortal);
-        portalCam.transform.rotation = playerCam.transform.rotation;
-    }
-
     void UpdateGraphicDepth () {
-
+        // Extend the depth of the portal display when player is going through it so as not to clip with camera near plane
         float halfHeight = playerCam.nearClipPlane * Mathf.Tan (playerCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * playerCam.aspect;
         float dst = Mathf.Sqrt (halfHeight * halfHeight + halfWidth * halfWidth + playerCam.nearClipPlane * playerCam.nearClipPlane);
@@ -138,7 +127,8 @@ public class Portal : MonoBehaviour {
             if (displayTexture != null) {
                 displayTexture.Release ();
             }
-            displayTexture = new RenderTexture (Screen.width, Screen.height, 0, (useHDR) ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default);
+            //displayTexture = new RenderTexture (Screen.width, Screen.height, 0, (useHDR) ? RenderTextureFormat.DefaultHDR : RenderTextureFormat.Default);
+            displayTexture = new RenderTexture (Screen.width, Screen.height, 24, RenderTextureFormat.ARGB32);
             portalMesh.material.SetTexture ("_MainTex", displayTexture);
             linkedPortal.SetRenderTarget (displayTexture);
         }
@@ -178,7 +168,7 @@ public class Portal : MonoBehaviour {
         }
 
         var originalMat = linkedPortal.portalMesh.material;
-        linkedPortal.portalMesh.material = firstRecursionMat;
+        //linkedPortal.portalMesh.material = firstRecursionMat;
         int startIndex = (useRecursion) ? 0 : recCount - 1;
         for (int i = startIndex; i < recCount; i++) {
             portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
@@ -189,16 +179,11 @@ public class Portal : MonoBehaviour {
 
         if (log) {
             if (!useRecursion) {
-                Debug.Log("Skip");
+                Debug.Log ("Skip");
             }
         }
 
         portalMesh.enabled = true;
     }
 
-    void OnValidate () {
-        if (linkedPortal != null && linkedPortal.linkedPortal != this) {
-            linkedPortal.linkedPortal = this;
-        }
-    }
 }
