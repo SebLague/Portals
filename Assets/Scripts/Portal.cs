@@ -15,6 +15,8 @@ public class Portal : MonoBehaviour {
     Vector3 posOld;
     FPSController player;
     public int recCount = 1;
+    Material firstRecursionMat;
+    public bool log;
 
     void Awake () {
         playerCam = Camera.main;
@@ -26,6 +28,7 @@ public class Portal : MonoBehaviour {
         collisionPlane = new Plane (transform.forward, transform.position);
         player = FindObjectOfType<FPSController> ();
         posOld = player.transform.position;
+        firstRecursionMat = new Material (Shader.Find ("Unlit/Color"));
     }
 
     void TrackPlayer () {
@@ -64,7 +67,7 @@ public class Portal : MonoBehaviour {
     }
 
     void SetNearClipPlane () {
-        return;
+
         // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
         // http://aras-p.info/texts/obliqueortho.html 
@@ -74,7 +77,7 @@ public class Portal : MonoBehaviour {
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
         Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
         float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal);
-        if (Mathf.Abs (camSpaceDst) > 0.01f) {
+        if (Mathf.Abs (camSpaceDst) > 0.02f) {
             Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDst);
 
             // Update projection based on new clip plane
@@ -142,22 +145,52 @@ public class Portal : MonoBehaviour {
 
     }
 
+    // http://wiki.unity3d.com/index.php/IsVisibleFrom
+    static bool CheckVisible (MeshRenderer renderer, Camera camera) {
+        Plane[] planes = GeometryUtility.CalculateFrustumPlanes (camera);
+        return GeometryUtility.TestPlanesAABB (planes, renderer.bounds);
+    }
+
     public void Render () {
+        // Skip rendering the view from this portal if player is not looking at the linked portal
+        if (!CheckVisible (linkedPortal.portalMesh, playerCam)) {
+            if (log) {
+
+                Debug.Log ("Skip");
+            }
+            return;
+        }
 
         portalMesh.enabled = false;
+        bool useRecursion = true;
 
         var localToWorldMatrix = playerCam.transform.localToWorldMatrix;
-
         Matrix4x4[] matrices = new Matrix4x4[recCount];
         for (int i = 0; i < recCount; i++) {
             localToWorldMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * localToWorldMatrix;
             matrices[recCount - i - 1] = localToWorldMatrix;
+
+            if (i == 0) {
+                portalCam.transform.SetPositionAndRotation (localToWorldMatrix.GetColumn (3), localToWorldMatrix.rotation);
+                portalCam.projectionMatrix = playerCam.projectionMatrix;
+                useRecursion = CheckVisible (linkedPortal.portalMesh, portalCam);
+            }
         }
 
-        for (int i = 0; i < recCount; i++) {
+        var originalMat = linkedPortal.portalMesh.material;
+        linkedPortal.portalMesh.material = firstRecursionMat;
+        int startIndex = (useRecursion) ? 0 : recCount - 1;
+        for (int i = startIndex; i < recCount; i++) {
             portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
+            SetNearClipPlane ();
             portalCam.Render ();
+            linkedPortal.portalMesh.material = originalMat;
+        }
 
+        if (log) {
+            if (!useRecursion) {
+                Debug.Log("Skip");
+            }
         }
 
         portalMesh.enabled = true;

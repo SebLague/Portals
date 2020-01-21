@@ -2252,6 +2252,7 @@ MonoBehaviour:
   portalCollider: {fileID: 569791396}
   useHDR: 0
   recCount: 5
+  log: 0
 --- !u!4 &1079826043
 Transform:
   m_ObjectHideFlags: 0
@@ -2520,6 +2521,7 @@ MonoBehaviour:
   portalCollider: {fileID: 1955849627}
   useHDR: 0
   recCount: 1
+  log: 0
 --- !u!23 &1260777220 stripped
 MeshRenderer:
   m_CorrespondingSourceObject: {fileID: 998356590043849621, guid: 6e23ee4a17f564089aa1f63cce4e8ca6,
@@ -3885,7 +3887,8 @@ MonoBehaviour:
   portalMesh: {fileID: 1260777220}
   portalCollider: {fileID: 1570197313}
   useHDR: 0
-  recCount: 1
+  recCount: 5
+  log: 1
 --- !u!1 &1986116633
 GameObject:
   m_ObjectHideFlags: 0
