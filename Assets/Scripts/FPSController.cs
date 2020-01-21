@@ -50,9 +50,13 @@ public class FPSController : MonoBehaviour {
 
     void Update () {
         if (Input.GetKeyDown (KeyCode.P)) {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             Debug.Break ();
         }
         if (Input.GetKeyDown (KeyCode.O)) {
+            Cursor.lockState = CursorLockMode.None;
+            Cursor.visible = true;
             this.enabled = false;
         }
         Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));

@@ -14,10 +14,12 @@ public class Portal : MonoBehaviour {
     protected Plane collisionPlane;
     Vector3 posOld;
     FPSController player;
+    public int recCount = 1;
 
     void Awake () {
         playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
+        portalCam.enabled = false;
     }
 
     protected virtual void Start () {
@@ -138,6 +140,29 @@ public class Portal : MonoBehaviour {
             linkedPortal.SetRenderTarget (displayTexture);
         }
 
+    }
+
+    public void Render () {
+
+        portalMesh.enabled = false;
+        var m = linkedPortal.portalMesh.material;
+        //linkedPortal.portalMesh.material = new Material (Shader.Find ("Unlit/RecTest"));
+        linkedPortal.portalMesh.material.mainTexture = portalCam.targetTexture;
+        //linkedPortal.portalMesh.material = m;
+
+        //linkedPortal.portalMesh.material.mainTexture = linkedPortal.displayTexture;
+        for (int i = 0; i < recCount; i++) {
+            linkedPortal.portalMesh.material.SetInt ("mode", (i == 0) ? 1 : 0);
+
+            //var camTex = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.Default);
+            //portalCam.targetTexture = camTex;
+            portalCam.Render ();
+
+        }
+        linkedPortal.portalMesh.material.SetInt ("mode", 0);
+        //linkedPortal.portalMesh.material.mainTexture = linkedPortal.displayTexture;
+        //linkedPortal.portalMesh.material = m;
+        portalMesh.enabled = true;
     }
 
     void OnValidate () {
