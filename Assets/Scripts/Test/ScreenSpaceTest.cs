@@ -23,10 +23,11 @@ public class ScreenSpaceTest : MonoBehaviour {
         for (int i = 0; i < verts.Length; i++) {
 
             var projectionSpaceVert = b * new Vector4 (verts[i].x, verts[i].y, verts[i].z, 1);
-            projectionSpaceVert /= projectionSpaceVert.w;
-            uvs[i] = new Vector2 (projectionSpaceVert.x * 0.5f + 0.5f, projectionSpaceVert.y * 0.5f + 0.5f);
-        }
 
+            projectionSpaceVert /= projectionSpaceVert.w;
+
+            uvs[i] = new Vector2 (projectionSpaceVert.x*.5f+.5f, projectionSpaceVert.y*.5f+.5f);
+        }
         meshFilter.mesh.uv = uvs;
     }
 }
