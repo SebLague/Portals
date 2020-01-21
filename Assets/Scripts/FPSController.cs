@@ -17,8 +17,8 @@ public class FPSController : MonoBehaviour {
 
     CharacterController controller;
     Camera cam;
-    float yaw;
-    float pitch;
+    public float yaw;
+    public float pitch;
     float smoothYaw;
     float smoothPitch;
 
@@ -41,6 +41,11 @@ public class FPSController : MonoBehaviour {
         }
 
         controller = GetComponent<CharacterController> ();
+
+        yaw = transform.eulerAngles.y;
+        pitch = cam.transform.localEulerAngles.x;
+        smoothYaw = yaw;
+        smoothPitch = pitch;
     }
 
     void Update () {

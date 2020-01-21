@@ -7,17 +7,27 @@ public class ProjectionTest : MonoBehaviour {
     public MeshFilter meshFilterA;
     public MeshFilter meshFilterB;
     public bool divideByW;
-    public bool divideByZ;
     public bool dropZ;
     [Range (0, 1)]
     public float projectPercent = 1;
     [Range (0, 1)]
     public float aspectCorrectPercent = 0;
     Vector3[] vertsA;
+    Vector3[] normalsA;
 
     void Awake () {
         vertsA = meshFilterA.mesh.vertices;
-        //Debug.Log (Camera.main.projectionMatrix);
+        normalsA = meshFilterA.mesh.normals;
+
+        // normals
+        Vector3[] newNormals = new Vector3[normalsA.Length];
+        for (int i = 0; i < normalsA.Length; i++) {
+            //var worldVert = meshFilterA.transform.TransformPoint (vertsA[i]);
+            Vector4 worldNormal = meshFilterA.transform.localToWorldMatrix * meshFilterB.transform.worldToLocalMatrix * new Vector4 (normalsA[i].x, normalsA[i].y, normalsA[i].z, 0);
+            newNormals[i] = worldNormal;
+        }
+        //meshFilterB.mesh.normals = newNormals;
+        //meshFilterB.mesh.RecalculateNormals ();
     }
 
     void Update () {
@@ -28,8 +38,10 @@ public class ProjectionTest : MonoBehaviour {
         Camera cam = Camera.main;
 
         Vector3[] newVerts = new Vector3[vertsA.Length];
+        Vector3[] newNormals = new Vector3[normalsA.Length];
         var worldToCam = cam.worldToCameraMatrix;
         var projectionMatrix = cam.projectionMatrix;
+        var b = cam.projectionMatrix * worldToCam * meshFilterA.transform.localToWorldMatrix;
 
         // to projection space
         for (int i = 0; i < vertsA.Length; i++) {
@@ -43,25 +55,23 @@ public class ProjectionTest : MonoBehaviour {
             //var corrected = new Vector3 ((viewSpaceVert.x - centreView.x) * s + centreView.x, viewSpaceVert.y, viewSpaceVert.z);
 
             Vector4 projectionSpaceVert = cam.projectionMatrix * viewSpaceVert;
+            projectionSpaceVert = b * new Vector4 (vertsA[i].x, vertsA[i].y, vertsA[i].z, 1);
+            newNormals[i] = b * new Vector4 (normalsA[i].x, normalsA[i].y, normalsA[i].z, 0);
             //var projectionSpaceVert = projectionMatrix * corrected;
             //newVerts[i] = projectionSpaceVert / projectionSpaceVert.w;
 
-            if (divideByZ) {
-                newVerts[i] = projectionSpaceVert / projectionSpaceVert.z;
-            }
             if (divideByW) {
                 newVerts[i] = projectionSpaceVert / projectionSpaceVert.w;
-            }
-            if (divideByZ && divideByW) {
-                newVerts[i] = projectionSpaceVert / projectionSpaceVert.w / projectionSpaceVert.z;
             }
             if (dropZ) {
                 newVerts[i] = new Vector3 (newVerts[i].x, newVerts[i].y, 1);
             }
-            newVerts[i] = Vector3.Lerp (worldVert, newVerts[i], projectPercent);
+            newVerts[i] = Vector3.Lerp (worldVert, newVerts[i], Mathf.Clamp (projectPercent, 0, 0.999f));
 
         }
         meshFilterB.mesh.vertices = newVerts;
+        meshFilterB.mesh.RecalculateBounds ();
+       // meshFilterB.mesh.normals = newNormals;
     }
 
     void OnDrawGizmos () {

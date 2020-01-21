@@ -3,7 +3,37 @@ guid: 83305df74a87d44f2bf92217b409e4c2
 ModelImporter:
   serializedVersion: 25
   internalIDToNameTable: []
-  externalObjects: {}
+  externalObjects:
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: base
+    second: {fileID: 2100000, guid: b73fd830254324ba2898c719fa922c10, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: glass
+    second: {fileID: 2100000, guid: 3b4bf71594fbd4dcb8cc49a6e4bd8c78, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: internals_alu
+    second: {fileID: 2100000, guid: b22a7dc8447494d26ae237fe233db73d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: internals_b
+    second: {fileID: 2100000, guid: b22a7dc8447494d26ae237fe233db73d, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: prop
+    second: {fileID: 2100000, guid: 6465cf478220c452f892080d5df9b457, type: 2}
+  - first:
+      type: UnityEngine:Material
+      assembly: UnityEngine.CoreModule
+      name: tires
+    second: {fileID: 2100000, guid: 0f16e9cf0cc0041bd9f88145838e4ade, type: 2}
   materials:
     importMaterials: 1
     materialName: 0
