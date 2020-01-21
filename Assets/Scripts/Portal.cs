@@ -145,23 +145,21 @@ public class Portal : MonoBehaviour {
     public void Render () {
 
         portalMesh.enabled = false;
-        var m = linkedPortal.portalMesh.material;
-        //linkedPortal.portalMesh.material = new Material (Shader.Find ("Unlit/RecTest"));
-        linkedPortal.portalMesh.material.mainTexture = portalCam.targetTexture;
-        //linkedPortal.portalMesh.material = m;
 
-        //linkedPortal.portalMesh.material.mainTexture = linkedPortal.displayTexture;
+        var localToWorldMatrix = playerCam.transform.localToWorldMatrix;
+
+        Matrix4x4[] matrices = new Matrix4x4[recCount];
         for (int i = 0; i < recCount; i++) {
-            linkedPortal.portalMesh.material.SetInt ("mode", (i == 0) ? 1 : 0);
+            localToWorldMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * localToWorldMatrix;
+            matrices[recCount - i - 1] = localToWorldMatrix;
+        }
 
-            //var camTex = new RenderTexture (Screen.width, Screen.height, 0, RenderTextureFormat.Default);
-            //portalCam.targetTexture = camTex;
+        for (int i = 0; i < recCount; i++) {
+            portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
             portalCam.Render ();
 
         }
-        linkedPortal.portalMesh.material.SetInt ("mode", 0);
-        //linkedPortal.portalMesh.material.mainTexture = linkedPortal.displayTexture;
-        //linkedPortal.portalMesh.material = m;
+
         portalMesh.enabled = true;
     }
 

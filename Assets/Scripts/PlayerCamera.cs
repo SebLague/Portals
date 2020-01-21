@@ -17,19 +17,17 @@ public class PlayerCamera : MonoBehaviour {
         var cam = GetComponent<Camera> ();
         var worldToCam = cam.worldToCameraMatrix;
         var projectionMatrix = cam.projectionMatrix;
-        var b = cam.projectionMatrix * worldToCam * meshFilter.transform.localToWorldMatrix;
+        var mvpMatrix = cam.projectionMatrix * worldToCam * meshFilter.transform.localToWorldMatrix;
 
         var verts = meshFilter.mesh.vertices;
-        var uvs = new Vector2[verts.Length];
-
+        var uvs = new List<Vector4> (verts.Length);
         // to projection space
         for (int i = 0; i < verts.Length; i++) {
 
-            var projectionSpaceVert = b * new Vector4 (verts[i].x, verts[i].y, verts[i].z, 1);
-            projectionSpaceVert /= projectionSpaceVert.w;
-            uvs[i] = new Vector2 (projectionSpaceVert.x * 0.5f + 0.5f, projectionSpaceVert.y * 0.5f + 0.5f);
+            var projectionSpaceVert = mvpMatrix * new Vector4 (verts[i].x, verts[i].y, verts[i].z, 1);
+            uvs.Add (projectionSpaceVert);
         }
 
-        meshFilter.mesh.uv = uvs;
+        meshFilter.mesh.SetUVs (0, uvs);
     }
 }

@@ -2251,7 +2251,7 @@ MonoBehaviour:
   portalMesh: {fileID: 323873446}
   portalCollider: {fileID: 569791396}
   useHDR: 0
-  recCount: 3
+  recCount: 5
 --- !u!4 &1079826043
 Transform:
   m_ObjectHideFlags: 0
@@ -2520,6 +2520,12 @@ MonoBehaviour:
   portalCollider: {fileID: 1955849627}
   useHDR: 0
   recCount: 1
+--- !u!23 &1260777220 stripped
+MeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 998356590043849621, guid: 6e23ee4a17f564089aa1f63cce4e8ca6,
+    type: 3}
+  m_PrefabInstance: {fileID: 1674097558}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1386526995
 GameObject:
   m_ObjectHideFlags: 0
@@ -3250,7 +3256,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1593119967
 Transform:
   m_ObjectHideFlags: 0
@@ -3291,7 +3297,7 @@ PrefabInstance:
     - target: {fileID: 7161718407485758687, guid: 6e23ee4a17f564089aa1f63cce4e8ca6,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 998356590043849621, guid: 6e23ee4a17f564089aa1f63cce4e8ca6,
         type: 3}
@@ -3516,7 +3522,7 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
-      objectReference: {fileID: 2100000, guid: c01478ecd70444e14994d14b8724ec21, type: 2}
+      objectReference: {fileID: 2100000, guid: 862d756f3c67d421c9ce251cd604fbf3, type: 2}
     - target: {fileID: -4216859302048453862, guid: 6e23ee4a17f564089aa1f63cce4e8ca6,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -3876,7 +3882,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   linkedPortal: {fileID: 1079826042}
-  portalMesh: {fileID: 534168557}
+  portalMesh: {fileID: 1260777220}
   portalCollider: {fileID: 1570197313}
   useHDR: 0
   recCount: 1
@@ -4265,7 +4271,7 @@ PrefabInstance:
     - target: {fileID: 1535381019623673786, guid: 5101aee443b6c4e028aae23d799c5fa4,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: -1.47
+      value: 1.5
       objectReference: {fileID: 0}
     - target: {fileID: 1535381019623673786, guid: 5101aee443b6c4e028aae23d799c5fa4,
         type: 3}
@@ -4275,7 +4281,7 @@ PrefabInstance:
     - target: {fileID: 1535381019623673786, guid: 5101aee443b6c4e028aae23d799c5fa4,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: -1.41
+      value: -0.94
       objectReference: {fileID: 0}
     - target: {fileID: 1535381019623673786, guid: 5101aee443b6c4e028aae23d799c5fa4,
         type: 3}
@@ -4361,7 +4367,7 @@ PrefabInstance:
     - target: {fileID: 1535381019623673787, guid: 5101aee443b6c4e028aae23d799c5fa4,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5101aee443b6c4e028aae23d799c5fa4, type: 3}
