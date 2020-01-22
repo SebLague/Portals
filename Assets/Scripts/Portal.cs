@@ -17,6 +17,7 @@ public class Portal : MonoBehaviour {
     public int recCount = 1;
     Material firstRecursionMat;
     public bool log;
+    public float testD;
 
     void Awake () {
         playerCam = Camera.main;
@@ -76,7 +77,7 @@ public class Portal : MonoBehaviour {
 
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
         Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
-        float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal);
+        float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal) + testD;
         // Don't use oblique clip plane if very close to portal as this can cause some visual artifacts
         if (Mathf.Abs (camSpaceDst) > 0.02f) {
             Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDst);
