@@ -6,6 +6,7 @@ public class SlicePortal : Portal {
 
     List<Interdimensional> trackedEntities;
 
+    /*
     protected override void Start () {
         base.Start ();
         trackedEntities = new List<Interdimensional> ();
@@ -59,4 +60,5 @@ public class SlicePortal : Portal {
         }
 
     }
+    */
 }

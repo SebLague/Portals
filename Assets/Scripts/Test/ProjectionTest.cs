@@ -83,8 +83,8 @@ public class ProjectionTest : MonoBehaviour {
 
         float s = Mathf.Lerp (1, Camera.main.pixelWidth / (float) Camera.main.pixelHeight, aspectCorrectPercent);
         Gizmos.color = new Color (1, 0, 0, 0.5f);
-        Gizmos.DrawWireCube (Vector3.forward, new Vector3 (2, 2, 0));
-        Gizmos.color = new Color (1, 1, 0, 0.5f);
+        //Gizmos.DrawWireCube (Vector3.forward, new Vector3 (2, 2, 0));
+        Gizmos.color = new Color (1, 0, 0, 1);
         Gizmos.DrawWireCube (Vector3.zero, Vector3.one * 2);
     }
 }

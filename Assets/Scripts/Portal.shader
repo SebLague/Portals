@@ -19,12 +19,14 @@
             struct appdata
             {
                 float4 vertex : POSITION;
+                float4 uv : TEXCOORD0;
             };
 
             struct v2f
             {
                 float4 vertex : SV_POSITION;
-                float4 screenPos : TEXCOORD0;
+                float4 uv : TEXCOORD0;
+                float4 screenPos : TEXCOORD1;
             };
 
             sampler2D _MainTex;
@@ -35,6 +37,7 @@
                 v2f o;
                 o.vertex = UnityObjectToClipPos(v.vertex);
                 o.screenPos = ComputeScreenPos(o.vertex);
+                o.uv = v.uv;
                 return o;
             }
 
@@ -42,7 +45,7 @@
             {
                 float2 uv = i.screenPos.xy / i.screenPos.w;
                 // sample the texture
-                fixed4 col = tex2D(_MainTex, uv);
+                fixed4 col = tex2D(_MainTex, i.uv);
                 return col;
                 //return float4(uv,0,0);
             }
