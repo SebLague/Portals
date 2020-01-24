@@ -11,7 +11,7 @@
     {
         Tags { "Queue" = "Geometry" "IgnoreProjector" = "True"  "RenderType"="Geometry" }
         LOD 200
-        Cull Off
+        //Cull Off
 
         CGPROGRAM
         // Physically based Standard lighting model, and enable shadows on all light types

@@ -20,34 +20,36 @@ public class Portal : MonoBehaviour {
     }
 
     void LateUpdate () {
-        //Plane separationPlane = new Plane (transform.forward, transform.position);
-
         for (int i = 0; i < trackedTravellers.Count; i++) {
             PortalTraveller traveller = trackedTravellers[i];
-            // Check if entity has moved from one side of the portal to the other in the last frame
-            Vector3 portalOffset = transform.position - traveller.transform.position;
+            Transform travellerT = traveller.transform;
+            var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * travellerT.localToWorldMatrix;
 
+            Vector3 portalOffset = transform.position - travellerT.position;
             int isFacingPortal = System.Math.Sign (Vector3.Dot (portalOffset, transform.forward));
             int wasFacingPortal = System.Math.Sign (Vector3.Dot (traveller.previousPortalOffset, transform.forward));
+            // Check if entity has moved from one side of the portal to the other in the last frame
             if (isFacingPortal != wasFacingPortal) {
-                Debug.Log ("teleport: " + gameObject.name);
                 // Teleport
-                var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * traveller.transform.localToWorldMatrix;
+                var positionOld = travellerT.position;
+                var rotOld = travellerT.rotation;
                 traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
+                traveller.SetClonePositionAndRotation (positionOld, rotOld);
 
-                // Can't rely on OnTriggerExit to remove tracked traveller next frame since it's
-                // dependent on when fixed update is next called
+                // Can't rely on OnTriggerEnter/Exit to be called on the next frame since it depends on when fixedupdate runs
+                linkedPortal.OnEnterPortal (traveller);
                 trackedTravellers.RemoveAt (i);
                 i--;
-                //linkedPortal.UpdateScreenDepth ();
 
             } else {
-                traveller.previousPortalOffset = transform.position - traveller.transform.position;
+                traveller.SetClonePositionAndRotation (m.GetColumn (3), m.rotation);
+                traveller.UpdateSlice (transform, linkedPortal.transform);
+                traveller.previousPortalOffset = transform.position - travellerT.position;
             }
 
         }
 
-        //UpdateScreenDepth ();
+        UpdateScreenDepth ();
     }
 
     void UpdateScreenDepth () {
@@ -93,19 +95,27 @@ public class Portal : MonoBehaviour {
         screen.enabled = true;
     }
 
+    void OnEnterPortal (PortalTraveller traveller) {
+        if (!trackedTravellers.Contains (traveller)) {
+            traveller.EnterPortalThreshold ();
+            traveller.previousPortalOffset = transform.position - traveller.transform.position;
+            trackedTravellers.Add (traveller);
+            traveller.UpdateSlice (transform, linkedPortal.transform);
+            UpdateScreenDepth ();
+        }
+    }
+
     void OnTriggerEnter (Collider other) {
         var traveller = other.GetComponent<PortalTraveller> ();
         if (traveller) {
-            Debug.Log ("enter: " + gameObject.name);
-            traveller.previousPortalOffset = transform.position - traveller.transform.position;
-            trackedTravellers.Add (traveller);
+            OnEnterPortal (traveller);
         }
     }
 
     void OnTriggerExit (Collider other) {
         var traveller = other.GetComponent<PortalTraveller> ();
         if (trackedTravellers.Contains (traveller)) {
-            Debug.Log ("exit: " + gameObject.name);
+            traveller.ExitPortalThreshold ();
             trackedTravellers.Remove (traveller);
         }
     }
