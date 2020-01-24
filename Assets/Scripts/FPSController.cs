@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FPSController : MonoBehaviour {
+public class FPSController : PortalTraveller {
 
     public float walkSpeed = 3;
     public float runSpeed = 6;
@@ -97,7 +97,6 @@ public class FPSController : MonoBehaviour {
             mY = 0;
         }
 
-
         yaw += mX * mouseSensitivity;
         pitch -= mY * mouseSensitivity;
         pitch = Mathf.Clamp (pitch, pitchMinMax.x, pitchMinMax.y);
@@ -109,33 +108,14 @@ public class FPSController : MonoBehaviour {
 
     }
 
-    public void Teleport (Transform fromPortal, Transform toPortal) {
-        var mirrorMatrix = toPortal.transform.localToWorldMatrix * fromPortal.worldToLocalMatrix * transform.localToWorldMatrix;
-        Vector3 teleportPos = mirrorMatrix.GetColumn (3);
-        Quaternion teleportRot = mirrorMatrix.rotation;
-
-        controller.enabled = false;
-        transform.position = teleportPos;
-
-        Vector3 eulerRot = mirrorMatrix.rotation.eulerAngles;
-        yaw = eulerRot.y;
-        smoothYaw = yaw;
-        transform.eulerAngles = Vector3.up * smoothYaw;
-        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
-
-        controller.enabled = true;
-    }
-
-    public void Teleport (Vector3 pos, Quaternion rot) {
-        controller.enabled = false;
+    public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
         transform.position = pos;
-
         Vector3 eulerRot = rot.eulerAngles;
         yaw = eulerRot.y;
         smoothYaw = yaw;
         transform.eulerAngles = Vector3.up * smoothYaw;
-
-        controller.enabled = true;
+        velocity = toPortal.TransformVector (fromPortal.InverseTransformVector (velocity));
+        Physics.SyncTransforms ();
     }
 
 }
