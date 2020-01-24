@@ -7,36 +7,41 @@ public class Portal : MonoBehaviour {
     Camera portalCam;
     RenderTexture viewTexture;
 
-    void Awake() {
+    void Awake () {
         playerCam = Camera.main;
-        portalCam = GetComponentInChildren<Camera>();
+        portalCam = GetComponentInChildren<Camera> ();
         portalCam.enabled = false;
     }
 
-    void CreateViewTexture() {
+    void CreateViewTexture () {
         if (viewTexture == null || viewTexture.width != Screen.width || viewTexture.height != Screen.height) {
             if (viewTexture != null) {
-                viewTexture.Release();
+                viewTexture.Release ();
             }
-            viewTexture = new RenderTexture(Screen.width, Screen.height, 0);
+            viewTexture = new RenderTexture (Screen.width, Screen.height, 0);
             // Render the view from the portal camera to the view texture
             portalCam.targetTexture = viewTexture;
             // Display the view texture on the screen of the linked portal
-            linkedPortal.screen.material.SetTexture("_MainTex", viewTexture);
+            linkedPortal.screen.material.SetTexture ("_MainTex", viewTexture);
         }
     }
 
-    // Called just before player camera is rendered
-    public void Render() {
+    static bool VisibleFromCamera(Renderer renderer, Camera camera) {
+        Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes(camera);
+        return GeometryUtility.TestPlanesAABB(frustumPlanes, renderer.bounds);
+    }
+
+    public void Render () {
+       
         screen.enabled = false;
-        CreateViewTexture();
+        CreateViewTexture ();
 
         // Make portal cam position and rotation the same relative to this portal as player cam relative to linked portal
         var m = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * playerCam.transform.localToWorldMatrix;
-        portalCam.transform.SetPositionAndRotation(m.GetColumn(3), m.rotation);
+        portalCam.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
 
         // Render the camera
-        portalCam.Render();
+        portalCam.Render ();
 
         screen.enabled = true;
     }

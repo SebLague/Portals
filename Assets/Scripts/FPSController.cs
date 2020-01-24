@@ -60,6 +60,7 @@ public class FPSController : MonoBehaviour {
             this.enabled = false;
         }
         Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
+
         Vector3 inputDir = new Vector3 (input.x, 0, input.y).normalized;
         Vector3 worldInputDir = transform.TransformDirection (inputDir);
 
@@ -85,8 +86,20 @@ public class FPSController : MonoBehaviour {
             }
         }
 
-        yaw += Input.GetAxisRaw ("Mouse X") * mouseSensitivity;
-        pitch -= Input.GetAxisRaw ("Mouse Y") * mouseSensitivity;
+        float mX = Input.GetAxisRaw ("Mouse X");
+        float mY = Input.GetAxisRaw ("Mouse Y");
+
+        float mMag = Mathf.Sqrt (mX * mX + mY * mY);
+        //Debug.Log (mMag);
+        if (mMag > 5) {
+
+            mX = 0;
+            mY = 0;
+        }
+
+
+        yaw += mX * mouseSensitivity;
+        pitch -= mY * mouseSensitivity;
         pitch = Mathf.Clamp (pitch, pitchMinMax.x, pitchMinMax.y);
         smoothPitch = Mathf.SmoothDamp (smoothPitch, pitch, ref pitchSmoothV, rotationSmoothTime);
         smoothYaw = Mathf.SmoothDamp (smoothYaw, yaw, ref yawSmoothV, rotationSmoothTime);
