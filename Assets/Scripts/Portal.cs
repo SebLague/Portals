@@ -32,7 +32,6 @@ public class Portal : MonoBehaviour {
     }
 
     public void Render () {
-       
         screen.enabled = false;
         CreateViewTexture ();
 
