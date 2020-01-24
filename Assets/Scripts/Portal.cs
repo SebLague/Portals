@@ -20,27 +20,34 @@ public class Portal : MonoBehaviour {
     }
 
     void LateUpdate () {
-        Plane separationPlane = new Plane (transform.forward, transform.position);
+        //Plane separationPlane = new Plane (transform.forward, transform.position);
 
-        foreach (PortalTraveller traveller in trackedTravellers) {
+        for (int i = 0; i < trackedTravellers.Count; i++) {
+            PortalTraveller traveller = trackedTravellers[i];
             // Check if entity has moved from one side of the portal to the other in the last frame
-            if (!separationPlane.SameSide (traveller.transform.position, traveller.previousPortalPosition)) {
-                Debug.Log (gameObject.name + ": Side");
-                Vector3 moveDir = (traveller.transform.position - traveller.previousPortalPosition).normalized;
-                // Check if entity collided with the portal
-                if (portalCollider.Raycast (new Ray (traveller.previousPortalPosition - moveDir, moveDir), out _, 10)) {
-                    Debug.Log (gameObject.name + ": Ray");
-                    // Teleport
-                    var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * traveller.transform.localToWorldMatrix;
-                    traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
-                    linkedPortal.UpdateScreenDepth ();
-                }
+            Vector3 portalOffset = transform.position - traveller.transform.position;
+
+            int isFacingPortal = System.Math.Sign (Vector3.Dot (portalOffset, transform.forward));
+            int wasFacingPortal = System.Math.Sign (Vector3.Dot (traveller.previousPortalOffset, transform.forward));
+            if (isFacingPortal != wasFacingPortal) {
+                Debug.Log ("teleport: " + gameObject.name);
+                // Teleport
+                var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * traveller.transform.localToWorldMatrix;
+                traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
+
+                // Can't rely on OnTriggerExit to remove tracked traveller next frame since it's
+                // dependent on when fixed update is next called
+                trackedTravellers.RemoveAt (i);
+                i--;
+                //linkedPortal.UpdateScreenDepth ();
+
+            } else {
+                traveller.previousPortalOffset = transform.position - traveller.transform.position;
             }
-            traveller.previousPortalPosition = traveller.transform.position;
-            Debug.Log (gameObject.name + ": update " + traveller.gameObject.name);
+
         }
 
-        UpdateScreenDepth ();
+        //UpdateScreenDepth ();
     }
 
     void UpdateScreenDepth () {
@@ -87,20 +94,20 @@ public class Portal : MonoBehaviour {
     }
 
     void OnTriggerEnter (Collider other) {
-        Debug.Log (gameObject.name + ":  enter: " + other.gameObject.name);
-        if (other.GetComponent<PortalTraveller> ()) {
-            var traveller = other.GetComponent<PortalTraveller> ();
-            traveller.previousPortalPosition = traveller.transform.position;
+        var traveller = other.GetComponent<PortalTraveller> ();
+        if (traveller) {
+            Debug.Log ("enter: " + gameObject.name);
+            traveller.previousPortalOffset = transform.position - traveller.transform.position;
             trackedTravellers.Add (traveller);
         }
     }
 
     void OnTriggerExit (Collider other) {
-        if (other.GetComponent<PortalTraveller> ()) {
-            Debug.Log (gameObject.name + ":  exit: " + other.gameObject.name);
-            trackedTravellers.Remove (other.GetComponent<PortalTraveller> ());
+        var traveller = other.GetComponent<PortalTraveller> ();
+        if (trackedTravellers.Contains (traveller)) {
+            Debug.Log ("exit: " + gameObject.name);
+            trackedTravellers.Remove (traveller);
         }
     }
 
-   
 }
