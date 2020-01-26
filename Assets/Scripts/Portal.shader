@@ -4,6 +4,7 @@
     {
         Tags { "RenderType"="Opaque" }
         Cull Off
+ 
         Pass
         {
             CGPROGRAM

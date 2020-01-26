@@ -9,14 +9,13 @@ public class Portal : MonoBehaviour {
     Camera portalCam;
     RenderTexture viewTexture;
     List<PortalTraveller> trackedTravellers;
-    Collider portalCollider;
+    public float testD;
 
     void Awake () {
         playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
         portalCam.enabled = false;
         trackedTravellers = new List<PortalTraveller> ();
-        portalCollider = GetComponent<Collider> ();
     }
 
     void LateUpdate () {
@@ -25,42 +24,39 @@ public class Portal : MonoBehaviour {
             Transform travellerT = traveller.transform;
             var m = linkedPortal.transform.localToWorldMatrix * transform.worldToLocalMatrix * travellerT.localToWorldMatrix;
 
-            Vector3 portalOffset = transform.position - travellerT.position;
-            int isFacingPortal = System.Math.Sign (Vector3.Dot (portalOffset, transform.forward));
-            int wasFacingPortal = System.Math.Sign (Vector3.Dot (traveller.previousPortalOffset, transform.forward));
-            // Check if entity has moved from one side of the portal to the other in the last frame
-            if (isFacingPortal != wasFacingPortal) {
-                // Teleport
+            Vector3 offsetFromPortal = travellerT.position - transform.position;
+            int portalSide = System.Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
+            int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
+            // Teleport the traveller if it has crossed from one side of the portal to the other
+            if (portalSide != portalSideOld) {
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
                 traveller.SetClonePositionAndRotation (positionOld, rotOld);
-
-                // Can't rely on OnTriggerEnter/Exit to be called on the next frame since it depends on when fixedupdate runs
-                linkedPortal.OnEnterPortal (traveller);
+                // Can't rely on OnTriggerEnter/Exit to be called next frame since it depends on when FixedUpdate runs
+                linkedPortal.OnTravellerEnterPortal (traveller);
                 trackedTravellers.RemoveAt (i);
                 i--;
-
             } else {
                 traveller.SetClonePositionAndRotation (m.GetColumn (3), m.rotation);
                 traveller.UpdateSlice (transform, linkedPortal.transform);
-                traveller.previousPortalOffset = transform.position - travellerT.position;
+                traveller.previousOffsetFromPortal = offsetFromPortal;
             }
-
         }
 
-        UpdateScreenDepth ();
+        ProtectScreenFromClipping ();
     }
 
-    void UpdateScreenDepth () {
-        // Extend the depth of the portal display when player is going through it so as not to clip with camera near plane
+    void ProtectScreenFromClipping () {
+        // Set the thickness of the portal screen so as not to clip with camera near plane when player goes through
         float halfHeight = playerCam.nearClipPlane * Mathf.Tan (playerCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * playerCam.aspect;
         float dstToNearClipCorner = new Vector3 (halfWidth, halfHeight, playerCam.nearClipPlane).magnitude;
 
-        bool playerFacingSameDirAsPortal = Vector3.Dot (transform.forward, transform.position - playerCam.transform.position) > 0;
-        screen.transform.localScale.Set (screen.transform.localScale.x, playerCam.transform.localScale.y, dstToNearClipCorner);
-        screen.transform.localPosition = Vector3.forward * dstToNearClipCorner * ((playerFacingSameDirAsPortal) ? 0.5f : -0.5f);
+        Transform screenT = screen.transform;
+        bool camFacingSameDirAsPortal = Vector3.Dot (transform.forward, transform.position - playerCam.transform.position) > 0;
+        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner);
+        screenT.localPosition = Vector3.forward * dstToNearClipCorner * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
     }
 
     void CreateViewTexture () {
@@ -82,8 +78,12 @@ public class Portal : MonoBehaviour {
     }
 
     public void Render () {
+        if (!VisibleFromCamera (linkedPortal.screen, playerCam)) {
+            return;
+        }
         screen.enabled = false;
         CreateViewTexture ();
+        SetNearClipPlane ();
 
         // Make portal cam position and rotation the same relative to this portal as player cam relative to linked portal
         var m = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * playerCam.transform.localToWorldMatrix;
@@ -91,33 +91,55 @@ public class Portal : MonoBehaviour {
 
         // Render the camera
         portalCam.Render ();
-
         screen.enabled = true;
     }
 
-    void OnEnterPortal (PortalTraveller traveller) {
+    void SetNearClipPlane () {
+
+        // Resources: http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
+        // https://www.csharpcodi.com/vs2/805/Unity-AudioVisualization-/Assets/SampleAssets/Environment/Water/Water/Scripts/PlanarReflection.cs/
+        // http://aras-p.info/texts/obliqueortho.html 
+        Transform plane = transform;
+        int dot = (Vector3.Dot (transform.position - portalCam.transform.position, plane.forward) < 0) ? -1 : 1;
+
+        Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
+        Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
+        float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal);
+        // Don't use oblique clip plane if very close to portal as this can cause some visual artifacts
+        if (Mathf.Abs (camSpaceDst) > 0.02f) {
+            Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDst);
+
+            // Update projection based on new clip plane
+            // Calculate matrix with player cam so that player camera settings (fov etc) are used
+            portalCam.projectionMatrix = playerCam.CalculateObliqueMatrix (clipPlaneCameraSpace);
+        } else {
+            //Debug.Log (camSpaceDst);
+            portalCam.projectionMatrix = playerCam.projectionMatrix;
+        }
+    }
+
+    void OnTravellerEnterPortal (PortalTraveller traveller) {
         if (!trackedTravellers.Contains (traveller)) {
             traveller.EnterPortalThreshold ();
-            traveller.previousPortalOffset = transform.position - traveller.transform.position;
-            trackedTravellers.Add (traveller);
             traveller.UpdateSlice (transform, linkedPortal.transform);
-            UpdateScreenDepth ();
+            traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
+            trackedTravellers.Add (traveller);
+            ProtectScreenFromClipping ();
         }
     }
 
     void OnTriggerEnter (Collider other) {
         var traveller = other.GetComponent<PortalTraveller> ();
         if (traveller) {
-            OnEnterPortal (traveller);
+            OnTravellerEnterPortal (traveller);
         }
     }
 
     void OnTriggerExit (Collider other) {
         var traveller = other.GetComponent<PortalTraveller> ();
-        if (trackedTravellers.Contains (traveller)) {
+        if (traveller && trackedTravellers.Contains (traveller)) {
             traveller.ExitPortalThreshold ();
             trackedTravellers.Remove (traveller);
         }
     }
-
 }

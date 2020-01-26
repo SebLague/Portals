@@ -1,10 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections.Generic;
+using UnityEngine;
 
 public class PortalTraveller : MonoBehaviour {
 
-    public MeshRenderer graphic;
-    MeshRenderer graphicClone;
-    public Vector3 previousPortalOffset { get; set; }
+    public GameObject graphicsObject;
+    GameObject graphicsClone;
+    public Vector3 previousOffsetFromPortal { get; set; }
+
+    Material[] originalMaterials;
+    Material[] cloneMaterials;
 
     public virtual void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
         transform.position = pos;
@@ -13,36 +17,49 @@ public class PortalTraveller : MonoBehaviour {
 
     // Called when first touches portal
     public virtual void EnterPortalThreshold () {
-        if (graphicClone == null) {
-            graphicClone = Instantiate (graphic);
-            graphicClone.transform.parent = graphic.transform.parent;
+        if (graphicsClone == null) {
+            graphicsClone = Instantiate (graphicsObject);
+            graphicsClone.transform.parent = graphicsObject.transform.parent;
+            graphicsClone.transform.localScale = graphicsObject.transform.localScale;
+            originalMaterials = GetMaterials (graphicsObject);
+            cloneMaterials = GetMaterials (graphicsClone);
         } else {
-            graphicClone.enabled = true;
+            graphicsClone.SetActive (true);
         }
     }
 
-    // Called when no longer touching portal
+    // Called once no longer touching portal (excluding when teleporting)
     public virtual void ExitPortalThreshold () {
-        graphicClone.enabled = false;
+        graphicsClone.SetActive (false);
     }
 
     public virtual void SetClonePositionAndRotation (Vector3 pos, Quaternion rot) {
-        graphicClone.transform.SetPositionAndRotation (pos, rot);
+        graphicsClone.transform.SetPositionAndRotation (pos, rot);
 
     }
 
     public virtual void UpdateSlice (Transform portal, Transform linkedPortal) {
-        var relativePosition = graphic.transform.position - portal.position;
+        var relativePosition = graphicsObject.transform.position - portal.position;
         bool enteringPositiveSide = Vector3.Dot (portal.forward, relativePosition) > 0;
         int side = (enteringPositiveSide) ? -1 : 1;
 
-        for (int i = 0; i < graphic.materials.Length; i++) {
-            graphic.materials[i].SetVector ("sliceCentre", portal.position);
-            graphic.materials[i].SetVector ("sliceNormal", portal.forward * side);
-            graphicClone.materials[i].SetVector ("sliceCentre", linkedPortal.position);
-            graphicClone.materials[i].SetVector ("sliceNormal", linkedPortal.forward * -side);
+        for (int i = 0; i < originalMaterials.Length; i++) {
+            originalMaterials[i].SetVector ("sliceCentre", portal.position);
+            originalMaterials[i].SetVector ("sliceNormal", portal.forward * side);
+            cloneMaterials[i].SetVector ("sliceCentre", linkedPortal.position);
+            cloneMaterials[i].SetVector ("sliceNormal", linkedPortal.forward * -side);
 
         }
     }
 
+    Material[] GetMaterials (GameObject g) {
+        var renderers = g.GetComponentsInChildren<MeshRenderer> ();
+        var matList = new List<Material> ();
+        foreach (var renderer in renderers) {
+            foreach (var mat in renderer.materials) {
+                matList.Add (mat);
+            }
+        }
+        return matList.ToArray ();
+    }
 }
