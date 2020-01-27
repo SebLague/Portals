@@ -1,10 +1,14 @@
 ﻿Shader "Unlit/Portal"
 {
+    Properties
+    {
+    }
     SubShader
     {
         Tags { "RenderType"="Opaque" }
+        LOD 100
         Cull Off
- 
+
         Pass
         {
             CGPROGRAM
@@ -19,11 +23,12 @@
 
             struct v2f
             {
-                float4 screenPos : TEXCOORD0;
                 float4 vertex : SV_POSITION;
+                float4 screenPos : TEXCOORD0;
             };
 
             sampler2D _MainTex;
+            float4 _MainTex_ST;
 
             v2f vert (appdata v)
             {
@@ -35,8 +40,11 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                float2 screenSpaceUV = i.screenPos.xy / i.screenPos.w;
-                return tex2D(_MainTex, screenSpaceUV);
+                float2 uv = i.screenPos.xy / i.screenPos.w;
+                // sample the texture
+                fixed4 col = tex2D(_MainTex, uv);
+                return col;
+                //return float4(uv,0,0);
             }
             ENDCG
         }

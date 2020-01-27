@@ -31,7 +31,6 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            int _S;
 
             v2f vert (appdata v)
             {
@@ -44,14 +43,11 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-               // return i.screenPos.;
-                float2 uv = i.screenPos.xy /i.screenPos.w;
-                //return float4(uv.xy, 0,0);
-                if (_S == 1) {
+                float2 uv = i.screenPos.xy / i.screenPos.w;
+
+         
                 //fixed4 col = tex2D(_MainTex, i.uv);
                 return float4(uv.xy, 0,0);
-                }
-                return float4(i.uv.xy, 0,0);
             }
             ENDCG
         }
