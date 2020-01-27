@@ -12,6 +12,7 @@ public class Portal : MonoBehaviour {
     public float nearClipOffset = 0.05f;
     public float nearClipLimit = 0.2f;
     public bool logDebugMessages;
+    public float buffer;
 
     // Private variables
     RenderTexture viewTexture;
@@ -46,13 +47,13 @@ public class Portal : MonoBehaviour {
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
-                traveller.SetClonePositionAndRotation (positionOld, rotOld);
+                traveller.graphicsClone.transform.SetPositionAndRotation (positionOld, rotOld);
                 // Can't rely on OnTriggerEnter/Exit to be called next frame since it depends on when FixedUpdate runs
                 linkedPortal.OnTravellerEnterPortal (traveller);
                 trackedTravellers.RemoveAt (i);
                 i--;
             } else {
-                traveller.SetClonePositionAndRotation (m.GetColumn (3), m.rotation);
+                traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
                 traveller.UpdateSlice (transform, linkedPortal.transform);
                 traveller.previousOffsetFromPortal = offsetFromPortal;
             }
@@ -70,7 +71,6 @@ public class Portal : MonoBehaviour {
 
         CreateViewTexture ();
 
-        screen.enabled = false;
         bool useRecursion = true;
 
         var localToWorldMatrix = playerCam.transform.localToWorldMatrix;
@@ -85,6 +85,10 @@ public class Portal : MonoBehaviour {
                 useRecursion = VisibleFromCamera (linkedPortal.screen, portalCam);
             }
         }
+
+        // Hide screen so that camera can see through portal
+        screen.enabled = false;
+        var hiddenTravellers = HideTravellers ();
 
         var originalMat = linkedPortal.screen.material;
         //linkedPortal.portalMesh.material = firstRecursionMat;
@@ -102,7 +106,11 @@ public class Portal : MonoBehaviour {
             }
         }
 
+        // Unhide objects hidden at start of render
         screen.enabled = true;
+        foreach (var h in hiddenTravellers) {
+            h.SetActive (true);
+        }
     }
 
     void CreateViewTexture () {
@@ -126,7 +134,7 @@ public class Portal : MonoBehaviour {
 
         Transform screenT = screen.transform;
         bool camFacingSameDirAsPortal = Vector3.Dot (transform.forward, transform.position - playerCam.transform.position) > 0;
-        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner);
+        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner + buffer);
         screenT.localPosition = Vector3.forward * dstToNearClipCorner * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
     }
 
@@ -178,6 +186,42 @@ public class Portal : MonoBehaviour {
             traveller.ExitPortalThreshold ();
             trackedTravellers.Remove (traveller);
         }
+    }
+
+    List<GameObject> HideTravellers () {
+        // When travellers cross the boundary of the portal, a bit of their mesh is drawn despite the oblique near clip plane
+        // (even more so when the clip plane is offset, which is done to prevent some other artifacts)
+        // To solve this, this function hides travellers before the camera renders them
+        // (with the exception of travellers on the other side of the portal to the camera, since these should be drawn)
+        var hiddenTravellers = new List<GameObject> ();
+        // Hide any tracked travellers which are on the same side of the portal as the portal cam
+        foreach (var traveller in trackedTravellers) {
+            if (traveller.graphicsObject.activeSelf) {
+                if (SameSideOfPortal (traveller.transform.position, portalCam.transform.position)) {
+                    traveller.graphicsObject.SetActive (false);
+                    hiddenTravellers.Add (traveller.graphicsObject);
+                }
+            }
+        }
+        //
+        foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
+            if (linkedTraveller.graphicsClone.activeSelf) {
+                if (SideOfPortal (portalCam.transform.position) != linkedPortal.SideOfPortal (linkedTraveller.transform.position)) {
+                    linkedTraveller.graphicsClone.SetActive (false);
+                    hiddenTravellers.Add (linkedTraveller.graphicsClone);
+                }
+            }
+        }
+
+        return hiddenTravellers;
+    }
+
+    int SideOfPortal (Vector3 pos) {
+        return System.Math.Sign (Vector3.Dot (pos - transform.position, transform.forward));
+    }
+
+    bool SameSideOfPortal (Vector3 posA, Vector3 posB) {
+        return SideOfPortal (posA) == SideOfPortal (posB);
     }
 
     // http://wiki.unity3d.com/index.php/IsVisibleFrom

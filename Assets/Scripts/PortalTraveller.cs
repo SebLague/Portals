@@ -4,7 +4,7 @@ using UnityEngine;
 public class PortalTraveller : MonoBehaviour {
 
     public GameObject graphicsObject;
-    GameObject graphicsClone;
+    public GameObject graphicsClone { get; set; }
     public Vector3 previousOffsetFromPortal { get; set; }
 
     Material[] originalMaterials;
@@ -31,11 +31,6 @@ public class PortalTraveller : MonoBehaviour {
     // Called once no longer touching portal (excluding when teleporting)
     public virtual void ExitPortalThreshold () {
         graphicsClone.SetActive (false);
-    }
-
-    public virtual void SetClonePositionAndRotation (Vector3 pos, Quaternion rot) {
-        graphicsClone.transform.SetPositionAndRotation (pos, rot);
-
     }
 
     public virtual void UpdateSlice (Transform portal, Transform linkedPortal) {
