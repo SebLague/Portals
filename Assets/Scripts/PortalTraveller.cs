@@ -7,8 +7,10 @@ public class PortalTraveller : MonoBehaviour {
     public GameObject graphicsClone { get; set; }
     public Vector3 previousOffsetFromPortal { get; set; }
 
-    Material[] originalMaterials;
-    Material[] cloneMaterials;
+    public Material[] originalMaterials { get; set; }
+    public Material[] cloneMaterials { get; set; }
+    public float centreOffsetMultiplier;
+    public float cloneCentreOffsetMultiplier;
 
     public virtual void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
         transform.position = pos;
@@ -31,20 +33,6 @@ public class PortalTraveller : MonoBehaviour {
     // Called once no longer touching portal (excluding when teleporting)
     public virtual void ExitPortalThreshold () {
         graphicsClone.SetActive (false);
-    }
-
-    public virtual void UpdateSlice (Transform portal, Transform linkedPortal) {
-        var relativePosition = graphicsObject.transform.position - portal.position;
-        bool enteringPositiveSide = Vector3.Dot (portal.forward, relativePosition) > 0;
-        int side = (enteringPositiveSide) ? -1 : 1;
-
-        for (int i = 0; i < originalMaterials.Length; i++) {
-            originalMaterials[i].SetVector ("sliceCentre", portal.position);
-            originalMaterials[i].SetVector ("sliceNormal", portal.forward * side);
-            cloneMaterials[i].SetVector ("sliceCentre", linkedPortal.position);
-            cloneMaterials[i].SetVector ("sliceNormal", linkedPortal.forward * -side);
-
-        }
     }
 
     Material[] GetMaterials (GameObject g) {

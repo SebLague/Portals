@@ -12,7 +12,6 @@ public class Portal : MonoBehaviour {
     public float nearClipOffset = 0.05f;
     public float nearClipLimit = 0.2f;
     public bool logDebugMessages;
-    public float buffer;
 
     // Private variables
     RenderTexture viewTexture;
@@ -52,15 +51,25 @@ public class Portal : MonoBehaviour {
                 linkedPortal.OnTravellerEnterPortal (traveller);
                 trackedTravellers.RemoveAt (i);
                 i--;
+
+                /// fix
+                foreach (var t in trackedTravellers) {
+                    UpdateSliceParams (t);
+                }
+                foreach (var t in linkedPortal.trackedTravellers) {
+                    linkedPortal.UpdateSliceParams (t);
+                }
             } else {
                 traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
-                traveller.UpdateSlice (transform, linkedPortal.transform);
+                UpdateSliceParams (traveller);
+                //traveller.UpdateSlice (transform, linkedPortal.transform);
                 traveller.previousOffsetFromPortal = offsetFromPortal;
             }
         }
     }
 
     public void Render () {
+
         // Skip rendering the view from this portal if player is not looking at the linked portal
         if (!VisibleFromCamera (linkedPortal.screen, playerCam)) {
             if (logDebugMessages) {
@@ -93,17 +102,13 @@ public class Portal : MonoBehaviour {
         var originalMat = linkedPortal.screen.material;
         //linkedPortal.portalMesh.material = firstRecursionMat;
         int startIndex = (useRecursion) ? 0 : recursionLimit - 1;
+        int renderCount = 0;
         for (int i = startIndex; i < recursionLimit; i++) {
             portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
             SetNearClipPlane ();
             portalCam.Render ();
             linkedPortal.screen.material = originalMat;
-        }
-
-        if (logDebugMessages) {
-            if (!useRecursion) {
-                Debug.Log ("Skip");
-            }
+            renderCount++;
         }
 
         // Unhide objects hidden at start of render
@@ -111,8 +116,24 @@ public class Portal : MonoBehaviour {
         foreach (var h in hiddenTravellers) {
             h.SetActive (true);
         }
-    }
+        foreach (var traveller in trackedTravellers) {
+            for (int i = 0; i < traveller.originalMaterials.Length; i++) {
+                traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", traveller.centreOffsetMultiplier);
+                traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", traveller.cloneCentreOffsetMultiplier);
+            }
+        }
 
+        foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
+            for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
+                linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", linkedTraveller.centreOffsetMultiplier);
+                linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", linkedTraveller.cloneCentreOffsetMultiplier);
+            }
+        }
+
+        if (logDebugMessages) {
+            Debug.Log (gameObject.name + " Rendered view " + renderCount + " times.");
+        }
+    }
     void CreateViewTexture () {
         if (viewTexture == null || viewTexture.width != Screen.width || viewTexture.height != Screen.height) {
             if (viewTexture != null) {
@@ -134,8 +155,51 @@ public class Portal : MonoBehaviour {
 
         Transform screenT = screen.transform;
         bool camFacingSameDirAsPortal = Vector3.Dot (transform.forward, transform.position - playerCam.transform.position) > 0;
-        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner + buffer);
+        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner);
         screenT.localPosition = Vector3.forward * dstToNearClipCorner * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
+    }
+
+    void UpdateSliceParams (PortalTraveller traveller) {
+
+        // Calculate slice normal
+        int side = SideOfPortal (traveller.transform.position);
+        Vector3 sliceNormal = transform.forward * -side;
+        Vector3 cloneSliceNormal = linkedPortal.transform.forward * side;
+
+        // Calculate slice centre
+        Vector3 slicePos = transform.position;
+        Vector3 cloneSlicePos = linkedPortal.transform.position;
+
+        // Adjust centres
+        float centreOffsetMultiplier = 0;
+        float cloneCentreOffsetMultiplier = 0;
+        float screenThickness = screen.transform.localScale.z;
+
+        bool playerSameSideAsTraveller = SameSideOfPortal (playerCam.transform.position, traveller.transform.position);
+        if (!playerSameSideAsTraveller) {
+            centreOffsetMultiplier = 1;
+        }
+        bool playerSameSideAsCloneAppearing = side != linkedPortal.SideOfPortal (playerCam.transform.position);
+        if (!playerSameSideAsCloneAppearing) {
+            cloneCentreOffsetMultiplier = 1;
+        }
+
+        // Apply parameters
+        traveller.centreOffsetMultiplier = centreOffsetMultiplier;
+        traveller.cloneCentreOffsetMultiplier = cloneCentreOffsetMultiplier;
+        for (int i = 0; i < traveller.originalMaterials.Length; i++) {
+            traveller.originalMaterials[i].SetVector ("sliceCentre", slicePos);
+            traveller.originalMaterials[i].SetVector ("sliceNormal", sliceNormal);
+            traveller.originalMaterials[i].SetFloat ("centreOffsetAmount", -screenThickness);
+            traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
+
+            traveller.cloneMaterials[i].SetVector ("sliceCentre", cloneSlicePos);
+            traveller.cloneMaterials[i].SetVector ("sliceNormal", cloneSliceNormal);
+            traveller.cloneMaterials[i].SetFloat ("centreOffsetAmount", -screenThickness);
+            traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", cloneCentreOffsetMultiplier);
+
+        }
+
     }
 
     // Use custom projection matrix to align portal camera's near clip plane with the surface of the portal
@@ -166,7 +230,8 @@ public class Portal : MonoBehaviour {
     void OnTravellerEnterPortal (PortalTraveller traveller) {
         if (!trackedTravellers.Contains (traveller)) {
             traveller.EnterPortalThreshold ();
-            traveller.UpdateSlice (transform, linkedPortal.transform);
+            UpdateSliceParams (traveller);
+            //traveller.UpdateSlice (transform, linkedPortal.transform);
             traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
             trackedTravellers.Add (traveller);
             ProtectScreenFromClipping ();
@@ -194,14 +259,21 @@ public class Portal : MonoBehaviour {
         // To solve this, this function hides travellers before the camera renders them
         // (with the exception of travellers on the other side of the portal to the camera, since these should be drawn)
         var hiddenTravellers = new List<GameObject> ();
+        const float centreOffsetMultiplier = -1f;
         // Hide any tracked travellers which are on the same side of the portal as the portal cam
         foreach (var traveller in trackedTravellers) {
             if (traveller.graphicsObject.activeSelf) {
                 if (SameSideOfPortal (traveller.transform.position, portalCam.transform.position)) {
                     traveller.graphicsObject.SetActive (false);
                     hiddenTravellers.Add (traveller.graphicsObject);
+                } else {
+                    for (int i = 0; i < traveller.originalMaterials.Length; i++) {
+                        traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
+                        traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
+                    }
                 }
             }
+
         }
         //
         foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
@@ -209,6 +281,11 @@ public class Portal : MonoBehaviour {
                 if (SideOfPortal (portalCam.transform.position) != linkedPortal.SideOfPortal (linkedTraveller.transform.position)) {
                     linkedTraveller.graphicsClone.SetActive (false);
                     hiddenTravellers.Add (linkedTraveller.graphicsClone);
+                } else {
+                    for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
+                        linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
+                        linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
+                    }
                 }
             }
         }

@@ -32,6 +32,7 @@ public class FPSController : PortalTraveller {
 
     bool jumping;
     float lastGroundedTime;
+    bool disabled;
 
     void Start () {
         cam = Camera.main;
@@ -57,8 +58,13 @@ public class FPSController : PortalTraveller {
         if (Input.GetKeyDown (KeyCode.O)) {
             Cursor.lockState = CursorLockMode.None;
             Cursor.visible = true;
-            this.enabled = false;
+            disabled = !disabled;
         }
+
+        if (disabled) {
+            return;
+        }
+
         Vector2 input = new Vector2 (Input.GetAxisRaw ("Horizontal"), Input.GetAxisRaw ("Vertical"));
 
         Vector3 inputDir = new Vector3 (input.x, 0, input.y).normalized;

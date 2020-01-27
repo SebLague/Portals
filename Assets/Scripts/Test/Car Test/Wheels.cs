@@ -9,7 +9,9 @@ public class Wheels : MonoBehaviour {
     // Update is called once per frame
     void Update () {
         foreach (Transform t in wheels) {
-            t.Rotate (t.right * Time.deltaTime * wheelRot, Space.World);
+            //  t.Rotate (t.right * Time.deltaTime * wheelRot, Space.World);
+            t.Rotate (Vector3.right * Time.deltaTime * wheelRot, Space.Self);
+
         }
     }
 }

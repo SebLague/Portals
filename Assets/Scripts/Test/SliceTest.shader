@@ -34,27 +34,23 @@
 
         float3 sliceNormal;
         float3 sliceCentre;
+        float centreOffsetAmount;
+        float centreOffsetMultiplier;
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
+            float3 adjustedCentre = sliceCentre + sliceNormal * centreOffsetAmount * centreOffsetMultiplier;
+            float3 offsetToSliceCentre = adjustedCentre - IN.worldPos;
+            clip (dot(offsetToSliceCentre, sliceNormal));
             
             // Albedo comes from a texture tinted by color
             fixed4 c = tex2D (_MainTex, IN.uv_MainTex) * _Color;
             o.Albedo = c.rgb;
 
-            // Inside of mesh
-            if (dot(IN.worldNormal, IN.viewDir) < 0) {
-                o.Albedo = 0;
-            }
-
             // Metallic and smoothness come from slider variables
             o.Metallic = _Metallic;
             o.Smoothness = _Glossiness;
             o.Alpha = c.a;
-
-            float3 offsetToSliceCentre = sliceCentre - IN.worldPos;
-            clip (dot(offsetToSliceCentre, sliceNormal));
-
         }
         ENDCG
     }

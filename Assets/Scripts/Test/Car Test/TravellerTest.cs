@@ -7,6 +7,8 @@ public class TravellerTest : PortalTraveller {
 
     void Update () {
         transform.position += transform.forward * Time.deltaTime * speed;
-       
+        if (Input.GetKeyDown (KeyCode.C)) {
+            speed = (speed == 0) ? 1 : 0;
+        }
     }
 }
