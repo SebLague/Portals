@@ -6,6 +6,10 @@
         _MainTex ("Albedo (RGB)", 2D) = "white" {}
         _Glossiness ("Smoothness", Range(0,1)) = 0.5
         _Metallic ("Metallic", Range(0,1)) = 0.0
+
+        sliceNormal("normal", Vector) = (0,0,0,0)
+        sliceCentre ("centre", Vector) = (0,0,0,0)
+        sliceOffsetDst("offset", Float) = 0
     }
     SubShader
     {
@@ -32,14 +36,16 @@
         half _Metallic;
         fixed4 _Color;
 
+        // World space normal of slice, anything along this direction from centre will be invisible
         float3 sliceNormal;
+        // World space centre of slice
         float3 sliceCentre;
-        float centreOffsetAmount;
-        float centreOffsetMultiplier;
+        // Increasing makes more of the mesh visible, decreasing makes less of the mesh visible
+        float sliceOffsetDst;
 
         void surf (Input IN, inout SurfaceOutputStandard o)
         {
-            float3 adjustedCentre = sliceCentre + sliceNormal * centreOffsetAmount * centreOffsetMultiplier;
+            float3 adjustedCentre = sliceCentre + sliceNormal * sliceOffsetDst;
             float3 offsetToSliceCentre = adjustedCentre - IN.worldPos;
             clip (dot(offsetToSliceCentre, sliceNormal));
             

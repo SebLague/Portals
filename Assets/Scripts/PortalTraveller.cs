@@ -9,8 +9,6 @@ public class PortalTraveller : MonoBehaviour {
 
     public Material[] originalMaterials { get; set; }
     public Material[] cloneMaterials { get; set; }
-    public float centreOffsetMultiplier;
-    public float cloneCentreOffsetMultiplier;
 
     public virtual void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {
         transform.position = pos;
@@ -39,12 +37,15 @@ public class PortalTraveller : MonoBehaviour {
         }
     }
 
-    public void SetSliceCentreOffset (float centreOffset) {
+    public void SetSliceOffsetDst (float dst, bool clone) {
         for (int i = 0; i < originalMaterials.Length; i++) {
-            originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffset);
-            cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffset);
-        }
+            if (clone) {
+                cloneMaterials[i].SetFloat ("sliceOffsetDst", dst);
+            } else {
+                originalMaterials[i].SetFloat ("sliceOffsetDst", dst);
+            }
 
+        }
     }
 
     Material[] GetMaterials (GameObject g) {
