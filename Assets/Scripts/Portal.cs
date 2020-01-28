@@ -105,7 +105,7 @@ public class Portal : MonoBehaviour {
 
         // Hide screen so that camera can see through portal
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
-        var hiddenTravellers = HideTravellers ();
+        var hiddenTravellers = new List<GameObject> ();
         SliceR (true);
 
         var originalMat = linkedPortal.screen.material;
@@ -113,11 +113,15 @@ public class Portal : MonoBehaviour {
         int startIndex = (useRecursion) ? 0 : recursionLimit - 1;
         int renderCount = 0;
         for (int i = startIndex; i < recursionLimit; i++) {
-            if (i == recursionLimit - 1) {
-                SliceR (false);
-            }
+
             portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
             SetNearClipPlane ();
+
+            if (i == recursionLimit - 1) {
+                hiddenTravellers = HideTravellers ();
+                SliceR (false);
+            }
+
             portalCam.Render ();
             linkedPortal.screen.material = originalMat;
             renderCount++;
@@ -131,13 +135,13 @@ public class Portal : MonoBehaviour {
         foreach (var traveller in trackedTravellers) {
             for (int i = 0; i < traveller.originalMaterials.Length; i++) {
                 traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", traveller.centreOffsetMultiplier);
-                traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", traveller.cloneCentreOffsetMultiplier);
+                //traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", traveller.cloneCentreOffsetMultiplier);
             }
         }
 
         foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
             for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
-                linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", linkedTraveller.centreOffsetMultiplier);
+                //linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", linkedTraveller.centreOffsetMultiplier);
                 linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", linkedTraveller.cloneCentreOffsetMultiplier);
             }
         }
@@ -271,14 +275,14 @@ public class Portal : MonoBehaviour {
 
                 for (int i = 0; i < traveller.originalMaterials.Length; i++) {
                     traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
-                    traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                    //traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
                 }
             }
         }
         foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
             if (linkedTraveller.graphicsClone.activeSelf) {
                 for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
-                    linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                    //linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
                     linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
                 }
 
