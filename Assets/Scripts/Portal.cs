@@ -33,6 +33,7 @@ public class Portal : MonoBehaviour {
     }
 
     void HandleTravellers () {
+        bool hasTeleported = false;
         for (int i = 0; i < trackedTravellers.Count; i++) {
             PortalTraveller traveller = trackedTravellers[i];
             Transform travellerT = traveller.transform;
@@ -43,6 +44,7 @@ public class Portal : MonoBehaviour {
             int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
             // Teleport the traveller if it has crossed from one side of the portal to the other
             if (portalSide != portalSideOld) {
+                hasTeleported = true;
                 var positionOld = travellerT.position;
                 var rotOld = travellerT.rotation;
                 traveller.Teleport (transform, linkedPortal.transform, m.GetColumn (3), m.rotation);
@@ -52,18 +54,21 @@ public class Portal : MonoBehaviour {
                 trackedTravellers.RemoveAt (i);
                 i--;
 
-                /// fix
-                foreach (var t in trackedTravellers) {
-                    UpdateSliceParams (t);
-                }
-                foreach (var t in linkedPortal.trackedTravellers) {
-                    linkedPortal.UpdateSliceParams (t);
-                }
             } else {
                 traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
                 UpdateSliceParams (traveller);
-                //traveller.UpdateSlice (transform, linkedPortal.transform);
                 traveller.previousOffsetFromPortal = offsetFromPortal;
+            }
+        }
+
+        // If the player teleports, update all slice parameters since these have some dependencies on the player camera position
+        // TODO: only run this if it's the player who teleported
+        if (hasTeleported) {
+            foreach (var t in trackedTravellers) {
+                UpdateSliceParams (t);
+            }
+            foreach (var t in linkedPortal.trackedTravellers) {
+                linkedPortal.UpdateSliceParams (t);
             }
         }
     }
@@ -96,7 +101,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Hide screen so that camera can see through portal
-        screen.enabled = false;
+        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         var hiddenTravellers = HideTravellers ();
 
         var originalMat = linkedPortal.screen.material;
@@ -112,7 +117,7 @@ public class Portal : MonoBehaviour {
         }
 
         // Unhide objects hidden at start of render
-        screen.enabled = true;
+        screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;
         foreach (var h in hiddenTravellers) {
             h.SetActive (true);
         }
@@ -151,12 +156,12 @@ public class Portal : MonoBehaviour {
     void ProtectScreenFromClipping () {
         float halfHeight = playerCam.nearClipPlane * Mathf.Tan (playerCam.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * playerCam.aspect;
-        float dstToNearClipCorner = new Vector3 (halfWidth, halfHeight, playerCam.nearClipPlane).magnitude;
+        float dstToNearClipPlaneCorner = new Vector3 (halfWidth, halfHeight, playerCam.nearClipPlane).magnitude;
 
         Transform screenT = screen.transform;
         bool camFacingSameDirAsPortal = Vector3.Dot (transform.forward, transform.position - playerCam.transform.position) > 0;
-        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipCorner);
-        screenT.localPosition = Vector3.forward * dstToNearClipCorner * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
+        screenT.localScale = new Vector3 (screenT.localScale.x, screenT.localScale.y, dstToNearClipPlaneCorner);
+        screenT.localPosition = Vector3.forward * dstToNearClipPlaneCorner * ((camFacingSameDirAsPortal) ? 0.5f : -0.5f);
     }
 
     void UpdateSliceParams (PortalTraveller traveller) {
@@ -275,7 +280,6 @@ public class Portal : MonoBehaviour {
             }
 
         }
-        //
         foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
             if (linkedTraveller.graphicsClone.activeSelf) {
                 if (SideOfPortal (portalCam.transform.position) != linkedPortal.SideOfPortal (linkedTraveller.transform.position)) {
