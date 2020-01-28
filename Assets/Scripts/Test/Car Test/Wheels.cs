@@ -6,13 +6,14 @@ public class Wheels : MonoBehaviour {
     public float wheelRot;
     public Transform[] wheels;
     public float multiplier = 1;
+    public float wheelRadius = 1;
 
-    // Update is called once per frame
-    void Update () {
+    public void Turn (float moveDst) {
+        float circum = 2 * Mathf.PI * wheelRadius;
+        float numTurns = moveDst / circum;
+
         foreach (Transform t in wheels) {
-            //  t.Rotate (t.right * Time.deltaTime * wheelRot, Space.World);
-            t.Rotate (Vector3.right * Time.deltaTime * wheelRot * multiplier, Space.Self);
-
+            t.Rotate (Vector3.right * numTurns * 360, Space.Self);
         }
     }
 }
