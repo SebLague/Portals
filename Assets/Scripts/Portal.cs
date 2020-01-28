@@ -12,6 +12,9 @@ public class Portal : MonoBehaviour {
     public float nearClipOffset = 0.05f;
     public float nearClipLimit = 0.2f;
     public bool logDebugMessages;
+    public float testOffsetAmount = 1;
+    public float centreOffsetMultiplierTest = -1f;
+    public float centreOffsetMultiplierTestRec = -1;
 
     // Private variables
     RenderTexture viewTexture;
@@ -103,12 +106,16 @@ public class Portal : MonoBehaviour {
         // Hide screen so that camera can see through portal
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
         var hiddenTravellers = HideTravellers ();
+        SliceR (true);
 
         var originalMat = linkedPortal.screen.material;
         //linkedPortal.portalMesh.material = firstRecursionMat;
         int startIndex = (useRecursion) ? 0 : recursionLimit - 1;
         int renderCount = 0;
         for (int i = startIndex; i < recursionLimit; i++) {
+            if (i == recursionLimit - 1) {
+                SliceR (false);
+            }
             portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
             SetNearClipPlane ();
             portalCam.Render ();
@@ -182,11 +189,11 @@ public class Portal : MonoBehaviour {
 
         bool playerSameSideAsTraveller = SameSideOfPortal (playerCam.transform.position, traveller.transform.position);
         if (!playerSameSideAsTraveller) {
-            centreOffsetMultiplier = 1;
+            centreOffsetMultiplier = testOffsetAmount;
         }
         bool playerSameSideAsCloneAppearing = side != linkedPortal.SideOfPortal (playerCam.transform.position);
         if (!playerSameSideAsCloneAppearing) {
-            cloneCentreOffsetMultiplier = 1;
+            cloneCentreOffsetMultiplier = testOffsetAmount;
         }
 
         // Apply parameters
@@ -258,24 +265,39 @@ public class Portal : MonoBehaviour {
         }
     }
 
+    void SliceR (bool rec) {
+        foreach (var traveller in trackedTravellers) {
+            if (traveller.graphicsObject.activeSelf) {
+
+                for (int i = 0; i < traveller.originalMaterials.Length; i++) {
+                    traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                    traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                }
+            }
+        }
+        foreach (var linkedTraveller in linkedPortal.trackedTravellers) {
+            if (linkedTraveller.graphicsClone.activeSelf) {
+                for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
+                    linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                    linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", (!rec) ? centreOffsetMultiplierTest : centreOffsetMultiplierTestRec);
+                }
+
+            }
+        }
+    }
+
     List<GameObject> HideTravellers () {
         // When travellers cross the boundary of the portal, a bit of their mesh is drawn despite the oblique near clip plane
         // (even more so when the clip plane is offset, which is done to prevent some other artifacts)
         // To solve this, this function hides travellers before the camera renders them
         // (with the exception of travellers on the other side of the portal to the camera, since these should be drawn)
         var hiddenTravellers = new List<GameObject> ();
-        const float centreOffsetMultiplier = -1f;
         // Hide any tracked travellers which are on the same side of the portal as the portal cam
         foreach (var traveller in trackedTravellers) {
             if (traveller.graphicsObject.activeSelf) {
                 if (SameSideOfPortal (traveller.transform.position, portalCam.transform.position)) {
                     traveller.graphicsObject.SetActive (false);
                     hiddenTravellers.Add (traveller.graphicsObject);
-                } else {
-                    for (int i = 0; i < traveller.originalMaterials.Length; i++) {
-                        traveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
-                        traveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
-                    }
                 }
             }
 
@@ -285,16 +307,16 @@ public class Portal : MonoBehaviour {
                 if (SideOfPortal (portalCam.transform.position) != linkedPortal.SideOfPortal (linkedTraveller.transform.position)) {
                     linkedTraveller.graphicsClone.SetActive (false);
                     hiddenTravellers.Add (linkedTraveller.graphicsClone);
-                } else {
-                    for (int i = 0; i < linkedTraveller.originalMaterials.Length; i++) {
-                        linkedTraveller.originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
-                        linkedTraveller.cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffsetMultiplier);
-                    }
                 }
             }
         }
 
         return hiddenTravellers;
+    }
+
+    class TravellerRenderData {
+        public List<GameObject> hiddenTravellers = new List<GameObject> ();
+        public List<PortalTraveller> slicedTravellers = new List<PortalTraveller> ();
     }
 
     int SideOfPortal (Vector3 pos) {

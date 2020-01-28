@@ -39,6 +39,14 @@ public class PortalTraveller : MonoBehaviour {
         }
     }
 
+    public void SetSliceCentreOffset (float centreOffset) {
+        for (int i = 0; i < originalMaterials.Length; i++) {
+            originalMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffset);
+            cloneMaterials[i].SetFloat ("centreOffsetMultiplier", centreOffset);
+        }
+
+    }
+
     Material[] GetMaterials (GameObject g) {
         var renderers = g.GetComponentsInChildren<MeshRenderer> ();
         var matList = new List<Material> ();
