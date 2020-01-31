@@ -1,14 +1,30 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class SliceTest : MonoBehaviour {
 
-    public MeshRenderer sliceRenderer;
+    public GameObject graphic;
+    Material[] materials;
+
+    void Start () {
+        materials = GetMaterials (graphic);
+    }
 
     void Update () {
-        sliceRenderer.sharedMaterial.SetVector ("sliceNormal", transform.forward);
-        sliceRenderer.sharedMaterial.SetVector ("sliceCentre", transform.position);
+        for (int i = 0; i < materials.Length; i++) {
+            materials[i].SetVector ("sliceCentre", transform.position);
+            materials[i].SetVector ("sliceNormal", transform.forward);
+        }
+    }
+
+    Material[] GetMaterials (GameObject g) {
+        var renderers = g.GetComponentsInChildren<MeshRenderer> ();
+        var matList = new List<Material> ();
+        foreach (var renderer in renderers) {
+            foreach (var mat in renderer.materials) {
+                matList.Add (mat);
+            }
+        }
+        return matList.ToArray ();
     }
 }

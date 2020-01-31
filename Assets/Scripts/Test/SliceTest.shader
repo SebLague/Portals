@@ -28,8 +28,6 @@
         {
             float2 uv_MainTex;
             float3 worldPos;
-            float3 worldNormal;
-            float3 viewDir;
         };
 
         half _Glossiness;

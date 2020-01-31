@@ -207,7 +207,6 @@ public class Portal : MonoBehaviour {
     }
 
     void UpdateSliceParams (PortalTraveller traveller) {
-
         // Calculate slice normal
         int side = SideOfPortal (traveller.transform.position);
         Vector3 sliceNormal = transform.forward * -side;
@@ -251,11 +250,11 @@ public class Portal : MonoBehaviour {
         // Resources:
         // http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         // http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
-        Transform plane = transform;
-        int dot = (Vector3.Dot (transform.position - portalCam.transform.position, plane.forward) < 0) ? -1 : 1;
+        Transform clipPlane = transform;
+        int dot = System.Math.Sign (Vector3.Dot (clipPlane.forward, transform.position - portalCam.transform.position));
 
-        Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (plane.position);
-        Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
+        Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (clipPlane.position);
+        Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (clipPlane.forward).normalized * dot;
         float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal) + nearClipOffset;
 
         // Don't use oblique clip plane if very close to portal as it seems this can cause some visual artifacts

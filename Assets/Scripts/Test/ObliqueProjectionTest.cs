@@ -8,6 +8,7 @@ public class ObliqueProjectionTest : MonoBehaviour {
     public float buffer = 0.01f;
     public Camera extra;
 
+
     void LateUpdate () {
         // http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
         if (plane) {
@@ -27,6 +28,9 @@ public class ObliqueProjectionTest : MonoBehaviour {
             // dst test
             Plane p = new Plane (plane.forward, plane.position);
             Debug.Log (p.distance + "  dst centre: " + (plane.position.magnitude) + " Dot: " + Vector3.Dot (plane.position, -plane.forward));
+
         }
+
     }
+
 }
