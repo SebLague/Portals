@@ -2,86 +2,45 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class ObliqueProjectionDemo : MonoBehaviour {
-
-    public MeshFilter meshFilterA;
-    public MeshFilter meshFilterB;
-    public bool divideByW;
-    public bool dropZ;
-    [Range (0, 1)]
-    public float projectPercent = 1;
-    Vector3[] vertsA;
+public class NearClipVis : MonoBehaviour {
+    public Transform clipPlane;
+    public bool useClipPlane;
+    public bool vis;
+    public float offset;
 
     public Color nearPlaneCol;
     public Color projLinesCol;
     public Color projLinesCol2;
-
-    public bool useOblique;
-    public Transform clipPlane;
     public MeshFilter sliceMesh;
-    public Camera playerCam;
-
-    void Awake () {
-        vertsA = meshFilterA.mesh.vertices;
-    }
 
     void Update () {
-        if (useOblique) {
+        if (useClipPlane) {
             SetNearClipPlane ();
         }
-        Run ();
-        SetMesh ();
 
+        SetMesh ();
     }
 
     void SetNearClipPlane () {
-        Camera cam = Camera.main;
-        // Resources:
-        // http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
+        Camera cam = GetComponent<Camera> ();
+        // Learning resource:
         // http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
         Transform plane = clipPlane;
         int dot = (Vector3.Dot (transform.position - cam.transform.position, plane.forward) < 0) ? -1 : 1;
 
         Vector3 camSpacePos = cam.worldToCameraMatrix.MultiplyPoint (plane.position);
-        Vector3 camSpaceNormal = cam.worldToCameraMatrix.MultiplyVector (plane.forward).normalized * dot;
-        float camSpaceDstToPlane = -Vector3.Dot (camSpacePos, camSpaceNormal) + 0;
+        Vector3 camSpaceNormal = cam.worldToCameraMatrix.MultiplyVector (plane.forward) * dot;
+        float camSpaceDstToPlane = -Vector3.Dot (camSpacePos, camSpaceNormal) + offset;
 
         Vector4 clipPlaneCameraSpace = new Vector4 (camSpaceNormal.x, camSpaceNormal.y, camSpaceNormal.z, camSpaceDstToPlane);
 
         // Update projection based on new clip plane
         // Calculate matrix with player cam so that player camera settings (fov, etc) are used
-        cam.projectionMatrix = playerCam.CalculateObliqueMatrix (clipPlaneCameraSpace);
-    }
-
-    void Run () {
-        Camera cam = Camera.main;
-
-        Vector3[] newVerts = new Vector3[vertsA.Length];
-        var worldToCam = cam.worldToCameraMatrix;
-        var projectionMatrix = cam.projectionMatrix;
-        var mvp = cam.projectionMatrix * worldToCam * meshFilterA.transform.localToWorldMatrix;
-
-        // to projection space
-        for (int i = 0; i < vertsA.Length; i++) {
-            //var worldVert = meshFilterA.transform.TransformPoint (vertsA[i]);
-            Vector4 worldVert = meshFilterA.transform.localToWorldMatrix * new Vector4 (vertsA[i].x, vertsA[i].y, vertsA[i].z, 1);
-
-            Vector4 projectionSpaceVert = mvp * new Vector4 (vertsA[i].x, vertsA[i].y, vertsA[i].z, 1);
-            if (divideByW) {
-                newVerts[i] = projectionSpaceVert / projectionSpaceVert.w;
-            }
-            if (dropZ) {
-                newVerts[i] = new Vector3 (newVerts[i].x, newVerts[i].y, 1);
-            }
-            newVerts[i] = Vector3.Lerp (worldVert, newVerts[i], Mathf.Clamp (projectPercent, 0, 0.999f));
-
-        }
-        meshFilterB.mesh.vertices = newVerts;
-        meshFilterB.mesh.RecalculateBounds ();
+        cam.projectionMatrix = cam.CalculateObliqueMatrix (clipPlaneCameraSpace);
     }
 
     void SetMesh () {
-        var cam = Camera.main;
+        var cam = GetComponent<Camera> ();
         float halfHeight = cam.nearClipPlane * Mathf.Tan (cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * cam.aspect;
         float dstToNearClipPlaneCorner = new Vector3 (halfWidth, halfHeight, cam.nearClipPlane).magnitude;
@@ -116,14 +75,17 @@ public class ObliqueProjectionDemo : MonoBehaviour {
     }
 
     void OnDrawGizmos () {
-        var cam = Camera.main;
+        if (!vis) {
+            return;
+        }
+        var cam = GetComponent<Camera> ();
         float halfHeight = cam.nearClipPlane * Mathf.Tan (cam.fieldOfView * 0.5f * Mathf.Deg2Rad);
         float halfWidth = halfHeight * cam.aspect;
         float dstToNearClipPlaneCorner = new Vector3 (halfWidth, halfHeight, cam.nearClipPlane).magnitude;
-        Vector3 topLeft = new Vector3 (-halfWidth, halfHeight, cam.nearClipPlane);
-        Vector3 topRight = new Vector3 (halfWidth, halfHeight, cam.nearClipPlane);
-        Vector3 bottomLeft = new Vector3 (-halfWidth, -halfHeight, cam.nearClipPlane);
-        Vector3 bottomRight = new Vector3 (halfWidth, -halfHeight, cam.nearClipPlane);
+        Vector3 topLeft = cam.transform.TransformPoint (new Vector3 (-halfWidth, halfHeight, cam.nearClipPlane));
+        Vector3 topRight = cam.transform.TransformPoint (new Vector3 (halfWidth, halfHeight, cam.nearClipPlane));
+        Vector3 bottomLeft = cam.transform.TransformPoint (new Vector3 (-halfWidth, -halfHeight, cam.nearClipPlane));
+        Vector3 bottomRight = cam.transform.TransformPoint (new Vector3 (halfWidth, -halfHeight, cam.nearClipPlane));
 
         Vector3 topLeftN = Vector3.zero;
         Vector3 topRightN = Vector3.zero;
@@ -132,17 +94,17 @@ public class ObliqueProjectionDemo : MonoBehaviour {
 
         Plane p = new Plane (clipPlane.forward, clipPlane.position);
         float dst;
-        if (p.Raycast (new Ray (topLeft, topLeft.normalized), out dst)) {
-            topLeftN = topLeft + topLeft.normalized * dst;
+        if (p.Raycast (new Ray (topLeft, (topLeft - cam.transform.position).normalized), out dst)) {
+            topLeftN = topLeft + (topLeft - cam.transform.position).normalized * dst;
         }
-        if (p.Raycast (new Ray (topRight, topRight.normalized), out dst)) {
-            topRightN = topRight + topRight.normalized * dst;
+        if (p.Raycast (new Ray (topRight, (topRight - cam.transform.position).normalized), out dst)) {
+            topRightN = topRight + (topRight - cam.transform.position).normalized * dst;
         }
-        if (p.Raycast (new Ray (bottomLeft, bottomLeft.normalized), out dst)) {
-            bottomLeftN = bottomLeft + bottomLeft.normalized * dst;
+        if (p.Raycast (new Ray (bottomLeft, (bottomLeft - cam.transform.position).normalized), out dst)) {
+            bottomLeftN = bottomLeft + (bottomLeft - cam.transform.position).normalized * dst;
         }
-        if (p.Raycast (new Ray (bottomRight, bottomRight.normalized), out dst)) {
-            bottomRightN = bottomRight + bottomRight.normalized * dst;
+        if (p.Raycast (new Ray (bottomRight, (bottomRight - cam.transform.position).normalized), out dst)) {
+            bottomRightN = bottomRight + (bottomRight - cam.transform.position).normalized * dst;
         }
 
         Gizmos.color = nearPlaneCol;
@@ -159,14 +121,11 @@ public class ObliqueProjectionDemo : MonoBehaviour {
 
         Gizmos.color = projLinesCol2;
         const float d = 1000;
-        Gizmos.DrawRay (topLeftN, topLeftN.normalized * d);
-        Gizmos.DrawRay (topRightN, topRightN.normalized * d);
-        Gizmos.DrawRay (bottomRightN, bottomRightN.normalized * d);
-        Gizmos.DrawRay (bottomLeftN, bottomLeftN.normalized * d);
+        Gizmos.DrawRay (topLeftN, (topLeftN - cam.transform.position).normalized * d);
+        Gizmos.DrawRay (topRightN, (topRightN - cam.transform.position).normalized * d);
+        Gizmos.DrawRay (bottomRightN, (bottomRightN - cam.transform.position).normalized * d);
+        Gizmos.DrawRay (bottomLeftN, (bottomLeftN - cam.transform.position).normalized * d);
 
-        Gizmos.color = new Color (1, 0, 0, 0.5f);
-        //Gizmos.DrawWireCube (Vector3.forward, new Vector3 (2, 2, 0));
-        Gizmos.color = new Color (1, 1, 0, 0.5f);
-        Gizmos.DrawWireCube (Vector3.zero, Vector3.one * 2);
     }
+
 }

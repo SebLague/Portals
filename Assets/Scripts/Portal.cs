@@ -245,16 +245,15 @@ public class Portal : MonoBehaviour {
     }
 
     // Use custom projection matrix to align portal camera's near clip plane with the surface of the portal
-    // Note that this affects the far clip plane, and can cause issues with depth-based effects like AO
+    // Note that this affects precision of the depth buffer, which can cause issues with effects like screenspace AO
     void SetNearClipPlane () {
-        // Resources:
-        // http://tomhulton.blogspot.com/2015/08/portal-rendering-with-offscreen-render.html
+        // Learning resource:
         // http://www.terathon.com/lengyel/Lengyel-Oblique.pdf
         Transform clipPlane = transform;
         int dot = System.Math.Sign (Vector3.Dot (clipPlane.forward, transform.position - portalCam.transform.position));
 
         Vector3 camSpacePos = portalCam.worldToCameraMatrix.MultiplyPoint (clipPlane.position);
-        Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (clipPlane.forward).normalized * dot;
+        Vector3 camSpaceNormal = portalCam.worldToCameraMatrix.MultiplyVector (clipPlane.forward) * dot;
         float camSpaceDst = -Vector3.Dot (camSpacePos, camSpaceNormal) + nearClipOffset;
 
         // Don't use oblique clip plane if very close to portal as it seems this can cause some visual artifacts
