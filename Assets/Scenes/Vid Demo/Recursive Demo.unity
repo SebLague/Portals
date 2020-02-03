@@ -1338,7 +1338,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &502171373
 Transform:
   m_ObjectHideFlags: 0
@@ -1350,7 +1350,6 @@ Transform:
   m_LocalPosition: {x: -10.634122, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
-  - {fileID: 1079826043}
   - {fileID: 1036896146}
   m_Father: {fileID: 0}
   m_RootOrder: 4
@@ -2162,7 +2161,7 @@ Transform:
   - {fileID: 1158117932}
   - {fileID: 830777570}
   m_Father: {fileID: 1190771719}
-  m_RootOrder: 1
+  m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &757286187
 PrefabInstance:
@@ -2586,17 +2585,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 2.62
+      value: 2.24
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.06
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 5.26
+      value: 4.66
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
@@ -2641,17 +2640,17 @@ PrefabInstance:
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 78.47902
+      value: 64.16209
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 78.47901
+      value: 64.16209
       objectReference: {fileID: 0}
     - target: {fileID: -4216859302048453862, guid: 06694f1a7a8544822b9402c98d602719,
         type: 3}
       propertyPath: m_LocalScale.z
-      value: 78.47902
+      value: 64.16209
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 06694f1a7a8544822b9402c98d602719, type: 3}
@@ -3341,7 +3340,7 @@ Transform:
   - {fileID: 1507179764}
   - {fileID: 214460506}
   m_Father: {fileID: 502171373}
-  m_RootOrder: 1
+  m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1047834857
 PrefabInstance:
@@ -3531,7 +3530,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   linkedPortal: {fileID: 1963264184}
   screen: {fileID: 1957311521}
-  recursionLimit: 1
+  recursionLimit: 6
   nearClipOffset: 0.05
   nearClipLimit: 0.2
   logDebugMessages: 0
@@ -3544,14 +3543,14 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1079826041}
   m_LocalRotation: {x: -0, y: 0.18345469, z: -0, w: 0.9830282}
-  m_LocalPosition: {x: 9.06, y: 0.049999952, z: 3.12}
+  m_LocalPosition: {x: -1.5741215, y: 0.049999952, z: 3.12}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1749367352}
   - {fileID: 501538822}
   - {fileID: 569791397}
-  m_Father: {fileID: 502171373}
-  m_RootOrder: 0
+  m_Father: {fileID: 1190771719}
+  m_RootOrder: 1
   m_LocalEulerAnglesHint: {x: 0, y: 21.142, z: 0}
 --- !u!65 &1079826044
 BoxCollider:
@@ -3732,6 +3731,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 1963264183}
+  - {fileID: 1079826043}
   - {fileID: 748245567}
   m_Father: {fileID: 0}
   m_RootOrder: 3
@@ -5629,7 +5629,7 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1963264182}
-  m_LocalRotation: {x: -0, y: -0.03099289, z: -0, w: 0.9995196}
+  m_LocalRotation: {x: -0, y: 0.0881463, z: -0, w: 0.9961076}
   m_LocalPosition: {x: 0.41, y: 0.049999952, z: 7.17}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
@@ -5638,7 +5638,7 @@ Transform:
   - {fileID: 1570197312}
   m_Father: {fileID: 1190771719}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -3.5520003, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 10.114, z: 0}
 --- !u!114 &1963264184
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5653,7 +5653,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   linkedPortal: {fileID: 1079826042}
   screen: {fileID: 1937257514}
-  recursionLimit: 1
+  recursionLimit: 6
   nearClipOffset: 0.05
   nearClipLimit: 0.2
   logDebugMessages: 0

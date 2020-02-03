@@ -21,12 +21,14 @@ public class Portal : MonoBehaviour {
     Camera playerCam;
     Material firstRecursionMat;
     List<PortalTraveller> trackedTravellers;
+    MeshFilter screenMeshFilter;
 
     void Awake () {
         playerCam = Camera.main;
         portalCam = GetComponentInChildren<Camera> ();
         portalCam.enabled = false;
         trackedTravellers = new List<PortalTraveller> ();
+        screenMeshFilter = screen.GetComponent<MeshFilter> ();
     }
 
     void LateUpdate () {
@@ -83,36 +85,42 @@ public class Portal : MonoBehaviour {
 
         CreateViewTexture ();
 
-        bool useRecursion = true;
-
         var localToWorldMatrix = playerCam.transform.localToWorldMatrix;
-        Matrix4x4[] matrices = new Matrix4x4[recursionLimit];
-        for (int i = 0; i < recursionLimit; i++) {
-            localToWorldMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * localToWorldMatrix;
-            matrices[recursionLimit - i - 1] = localToWorldMatrix;
+        var renderPositions = new Vector3[recursionLimit];
+        var renderRotations = new Quaternion[recursionLimit];
 
-            if (i == 0) {
-                portalCam.transform.SetPositionAndRotation (localToWorldMatrix.GetColumn (3), localToWorldMatrix.rotation);
-                portalCam.projectionMatrix = playerCam.projectionMatrix;
-                useRecursion = VisibleFromCamera (linkedPortal.screen, portalCam);
+        int startIndex = 0;
+        portalCam.projectionMatrix = playerCam.projectionMatrix;
+        for (int i = 0; i < recursionLimit; i++) {
+            if (i > 0) {
+                // No need for recursive rendering if linked portal is not visible through this portal
+                //if (!CameraUtility.BoundsInFrontOfBounds (screenMeshFilter, linkedPortal.screenMeshFilter, portalCam)) {
+                if (!CameraUtility.BoundsOverlap (screenMeshFilter, linkedPortal.screenMeshFilter, portalCam)) {
+                    break;
+                }
             }
+            localToWorldMatrix = transform.localToWorldMatrix * linkedPortal.transform.worldToLocalMatrix * localToWorldMatrix;
+            int renderOrderIndex = recursionLimit - i - 1;
+            renderPositions[renderOrderIndex] = localToWorldMatrix.GetColumn (3);
+            renderRotations[renderOrderIndex] = localToWorldMatrix.rotation;
+
+            portalCam.transform.SetPositionAndRotation (renderPositions[renderOrderIndex], renderRotations[renderOrderIndex]);
+            startIndex = renderOrderIndex;
         }
 
         // Hide screen so that camera can see through portal
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
 
-        int startIndex = (useRecursion) ? 0 : recursionLimit - 1;
+        int numRenders = 0;
         for (int i = startIndex; i < recursionLimit; i++) {
-            portalCam.transform.SetPositionAndRotation (matrices[i].GetColumn (3), matrices[i].rotation);
+
+            portalCam.transform.SetPositionAndRotation (renderPositions[i], renderRotations[i]);
             SetNearClipPlane ();
-            bool finalRender = (i == recursionLimit - 1);
-
-            if (finalRender) {
-
-            }
             HandleClipping ();
             portalCam.Render ();
+            numRenders++;
         }
+        Debug.Log (numRenders);
 
         // Unhide objects hidden at start of render
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;

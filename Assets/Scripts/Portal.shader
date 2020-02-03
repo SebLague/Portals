@@ -29,7 +29,6 @@
 
             sampler2D _MainTex;
             float4 _MainTex_ST;
-            int hideMesh; // set to 1 to clip the mesh (but keep shadows)
 
             v2f vert (appdata v)
             {
@@ -41,7 +40,6 @@
 
             fixed4 frag (v2f i) : SV_Target
             {
-                clip(-hideMesh);
                 float2 uv = i.screenPos.xy / i.screenPos.w;
                 // sample the texture
                 fixed4 col = tex2D(_MainTex, uv);
