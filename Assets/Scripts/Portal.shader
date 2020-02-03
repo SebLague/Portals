@@ -2,6 +2,7 @@
 {
     Properties
     {
+        _TestColour ("TestColor", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -28,7 +29,9 @@
             };
 
             sampler2D _MainTex;
-            float4 _MainTex_ST;
+            float4 _TestColour;
+            int active; // set to 1 to display texture, otherwise will draw test colour
+            
 
             v2f vert (appdata v)
             {
@@ -41,9 +44,8 @@
             fixed4 frag (v2f i) : SV_Target
             {
                 float2 uv = i.screenPos.xy / i.screenPos.w;
-                // sample the texture
-                fixed4 col = tex2D(_MainTex, uv);
-                return col;
+                fixed4 portalCol = tex2D(_MainTex, uv);
+                return portalCol * active + _TestColour * (1-active);
             }
             ENDCG
         }

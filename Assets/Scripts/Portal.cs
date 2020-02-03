@@ -11,9 +11,6 @@ public class Portal : MonoBehaviour {
     [Header ("Advanced Settings")]
     public float nearClipOffset = 0.05f;
     public float nearClipLimit = 0.2f;
-    public bool logDebugMessages;
-
-    public float test;
 
     // Private variables
     RenderTexture viewTexture;
@@ -29,6 +26,7 @@ public class Portal : MonoBehaviour {
         portalCam.enabled = false;
         trackedTravellers = new List<PortalTraveller> ();
         screenMeshFilter = screen.GetComponent<MeshFilter> ();
+        screen.material.SetInt ("active", 1);
     }
 
     void LateUpdate () {
@@ -77,9 +75,6 @@ public class Portal : MonoBehaviour {
 
         // Skip rendering the view from this portal if player is not looking at the linked portal
         if (!VisibleFromCamera (linkedPortal.screen, playerCam)) {
-            if (logDebugMessages) {
-                Debug.Log ("Skip");
-            }
             return;
         }
 
@@ -111,16 +106,12 @@ public class Portal : MonoBehaviour {
         // Hide screen so that camera can see through portal
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
 
-        int numRenders = 0;
         for (int i = startIndex; i < recursionLimit; i++) {
-
             portalCam.transform.SetPositionAndRotation (renderPositions[i], renderRotations[i]);
             SetNearClipPlane ();
             HandleClipping ();
             portalCam.Render ();
-            numRenders++;
         }
-        Debug.Log (numRenders);
 
         // Unhide objects hidden at start of render
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.On;

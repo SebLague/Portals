@@ -21,6 +21,6 @@ public class CloudCoreTest : MonoBehaviour {
     }
 
     void Update () {
-        myTransform.RotateAround (Vector3.zero, Vector3.up, Time.deltaTime * rotSpeed);
+        myTransform.RotateAround (transform.parent.position, Vector3.up, Time.deltaTime * rotSpeed);
     }
 }

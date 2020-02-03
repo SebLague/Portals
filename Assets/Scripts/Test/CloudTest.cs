@@ -28,7 +28,7 @@ public class CloudTest : MonoBehaviour {
             float y = Mathf.Cos (inclination);
             float z = Mathf.Sin (inclination) * Mathf.Cos (azimuth);
 
-            var g = Instantiate (cloudPrefab, new Vector3 (x, y, z) * spawnRadius, Quaternion.identity);
+            var g = Instantiate (cloudPrefab, transform.position + new Vector3 (x, y, z) * spawnRadius, Quaternion.identity, transform);
         }
 
         if (randomizeCloudSeed) {
@@ -45,7 +45,7 @@ public class CloudTest : MonoBehaviour {
             float y = Mathf.Cos (inclination);
             float z = Mathf.Sin (inclination) * Mathf.Cos (azimuth);
 
-            var g = Instantiate (cloudCorePrefab, new Vector3 (x, y, z) * spawnRadius, Quaternion.identity);
+            var g = Instantiate (cloudCorePrefab, transform.position + new Vector3 (x, y, z) * spawnRadius, Quaternion.identity, transform);
         }
     }
 }

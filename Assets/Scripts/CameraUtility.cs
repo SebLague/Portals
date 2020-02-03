@@ -13,6 +13,7 @@ public static class CameraUtility {
     };
 
     public static bool BoundsOverlap (MeshFilter nearObject, MeshFilter farObject, Camera camera) {
+        
         var near = GetScreenRectFromBounds (nearObject, camera);
         var far = GetScreenRectFromBounds (farObject, camera);
 

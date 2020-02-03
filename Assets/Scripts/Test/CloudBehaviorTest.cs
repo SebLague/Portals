@@ -17,7 +17,7 @@ public class CloudBehaviorTest : MonoBehaviour {
     }
 
     void Update () {
-        myTransform.RotateAround (Vector3.zero, Vector3.up, Time.deltaTime * rotSpeed);
+        myTransform.RotateAround (transform.parent.position, Vector3.up, Time.deltaTime * rotSpeed);
         float maxScale = 0;
         for (int i = 0; i < cloudCentres.Length; i++) {
             CloudCoreTest cloudCentre = cloudCentres[i];
