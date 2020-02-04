@@ -4791,7 +4791,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 9164778021704365589}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
   m_Name: 
@@ -4829,7 +4829,7 @@ GameObject:
   - component: {fileID: 7665427741243068627}
   - component: {fileID: 7665427741243068626}
   - component: {fileID: 1865634422}
-  m_Layer: 10
+  m_Layer: 9
   m_Name: Main Camera
   m_TagString: MainCamera
   m_Icon: {fileID: 0}

@@ -7,10 +7,16 @@ public class PortalPhysicsObject : PortalTraveller {
 
     public float force = 10;
     new Rigidbody rigidbody;
+    public Color[] colors;
+    static int i;
 
     void Awake () {
         rigidbody = GetComponent<Rigidbody> ();
-        graphicsObject.GetComponent<MeshRenderer> ().material.color = new Color (Random.value, Random.value, Random.value);
+        graphicsObject.GetComponent<MeshRenderer> ().material.color = colors[i];
+        i++;
+        if (i > colors.Length - 1) {
+            i = 0;
+        }
     }
 
     public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {

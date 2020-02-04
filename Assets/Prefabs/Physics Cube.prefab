@@ -64,6 +64,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   graphicsObject: {fileID: 3860821566194427024}
   force: 10
+  colors:
+  - {r: 0.8207547, g: 0.19192225, b: 0.05032932, a: 0}
+  - {r: 0.9528302, g: 0.71230745, b: 0, a: 0}
+  - {r: 0.5497313, g: 0.8490566, b: 0, a: 0}
+  - {r: 0, g: 0.8679245, b: 0.47444156, a: 0}
+  - {r: 0, g: 0.73709583, b: 1, a: 0}
+  - {r: 0.6513128, g: 0, b: 1, a: 0}
 --- !u!65 &3860821565767043807
 BoxCollider:
   m_ObjectHideFlags: 0
