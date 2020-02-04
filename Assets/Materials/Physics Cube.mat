@@ -7,8 +7,8 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Portal Screen
-  m_Shader: {fileID: 4800000, guid: 670c541ecf09d494896624500a1a3272, type: 3}
+  m_Name: Physics Cube
+  m_Shader: {fileID: 4800000, guid: aaeaf3dc8c9344c5fa572f7789c131cc, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -40,7 +40,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 8400000, guid: 349caf558d3034524ab3541218752975, type: 2}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -70,12 +70,11 @@ Material:
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
-    - _T: 0
     - _UVSec: 0
-    - _V: 0
     - _ZWrite: 1
+    - sliceOffsetDst: 0
     m_Colors:
-    - _Color: {r: 0.1792453, g: 0.1792453, b: 0.1792453, a: 1}
+    - _Color: {r: 1, g: 0.16320226, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
-    - _InactiveColour: {r: 0, g: 0, b: 0, a: 1}
-    - _TestColour: {r: 1, g: 1, b: 1, a: 1}
+    - sliceCentre: {r: 0, g: 0, b: 0, a: 0}
+    - sliceNormal: {r: 0, g: 0, b: 0, a: 0}

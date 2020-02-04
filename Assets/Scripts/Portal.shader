@@ -2,7 +2,7 @@
 {
     Properties
     {
-        _TestColour ("TestColor", Color) = (1, 1, 1, 1)
+        _InactiveColour ("Inactive Colour", Color) = (1, 1, 1, 1)
     }
     SubShader
     {
@@ -29,7 +29,7 @@
             };
 
             sampler2D _MainTex;
-            float4 _TestColour;
+            float4 _InactiveColour;
             int active; // set to 1 to display texture, otherwise will draw test colour
             
 
@@ -45,7 +45,7 @@
             {
                 float2 uv = i.screenPos.xy / i.screenPos.w;
                 fixed4 portalCol = tex2D(_MainTex, uv);
-                return portalCol * active + _TestColour * (1-active);
+                return portalCol * active + _InactiveColour * (1-active);
             }
             ENDCG
         }

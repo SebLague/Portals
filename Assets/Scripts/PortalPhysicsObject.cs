@@ -8,14 +8,9 @@ public class PortalPhysicsObject : PortalTraveller {
     public float force = 10;
     new Rigidbody rigidbody;
 
-    void Start () {
+    void Awake () {
         rigidbody = GetComponent<Rigidbody> ();
-    }
-
-    void Update () {
-        if (Input.GetKeyDown (KeyCode.L)) {
-            GetComponent<Rigidbody> ().AddForce ((transform.forward + transform.up * .5f).normalized * force, ForceMode.Impulse);
-        }
+        graphicsObject.GetComponent<MeshRenderer> ().material.color = new Color (Random.value, Random.value, Random.value);
     }
 
     public override void Teleport (Transform fromPortal, Transform toPortal, Vector3 pos, Quaternion rot) {

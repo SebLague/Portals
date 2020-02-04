@@ -105,12 +105,17 @@ public class Portal : MonoBehaviour {
 
         // Hide screen so that camera can see through portal
         screen.shadowCastingMode = UnityEngine.Rendering.ShadowCastingMode.ShadowsOnly;
+        linkedPortal.screen.material.SetInt ("active", 0);
 
         for (int i = startIndex; i < recursionLimit; i++) {
             portalCam.transform.SetPositionAndRotation (renderPositions[i], renderRotations[i]);
             SetNearClipPlane ();
             HandleClipping ();
             portalCam.Render ();
+
+            if (i == startIndex) {
+                linkedPortal.screen.material.SetInt ("active", 1);
+            }
         }
 
         // Unhide objects hidden at start of render
@@ -307,6 +312,12 @@ public class Portal : MonoBehaviour {
     Vector3 portalCamPos {
         get {
             return portalCam.transform.position;
+        }
+    }
+
+    void OnValidate () {
+        if (linkedPortal != null) {
+            linkedPortal.linkedPortal = this;
         }
     }
 
