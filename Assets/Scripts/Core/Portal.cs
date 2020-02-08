@@ -74,7 +74,7 @@ public class Portal : MonoBehaviour {
     public void Render () {
 
         // Skip rendering the view from this portal if player is not looking at the linked portal
-        if (!VisibleFromCamera (linkedPortal.screen, playerCam)) {
+        if (!CameraUtility.VisibleFromCamera (linkedPortal.screen, playerCam)) {
             return;
         }
 
@@ -89,7 +89,6 @@ public class Portal : MonoBehaviour {
         for (int i = 0; i < recursionLimit; i++) {
             if (i > 0) {
                 // No need for recursive rendering if linked portal is not visible through this portal
-                //if (!CameraUtility.BoundsInFrontOfBounds (screenMeshFilter, linkedPortal.screenMeshFilter, portalCam)) {
                 if (!CameraUtility.BoundsOverlap (screenMeshFilter, linkedPortal.screenMeshFilter, portalCam)) {
                     break;
                 }
@@ -275,8 +274,6 @@ public class Portal : MonoBehaviour {
     void OnTravellerEnterPortal (PortalTraveller traveller) {
         if (!trackedTravellers.Contains (traveller)) {
             traveller.EnterPortalThreshold ();
-            //UpdateSliceParams (traveller);
-            //traveller.UpdateSlice (transform, linkedPortal.transform);
             traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
             trackedTravellers.Add (traveller);
         }
@@ -319,11 +316,5 @@ public class Portal : MonoBehaviour {
         if (linkedPortal != null) {
             linkedPortal.linkedPortal = this;
         }
-    }
-
-    // http://wiki.unity3d.com/index.php/IsVisibleFrom
-    static bool VisibleFromCamera (Renderer renderer, Camera camera) {
-        Plane[] frustumPlanes = GeometryUtility.CalculateFrustumPlanes (camera);
-        return GeometryUtility.TestPlanesAABB (frustumPlanes, renderer.bounds);
     }
 }
