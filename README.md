@@ -5,4 +5,4 @@ Note: in the two worlds scene, you'll need to have Blender installed to view som
 
 [Watch video](https://www.youtube.com/watch?v=cWpFZbjtSQg)
 
-![Portals](https://raw.githubusercontent.com/SebLague/Images/master/Portals.png?token=ABARVJ3MBO7M27NSEDNKDO26LEKFG)
+![Portals](https://raw.githubusercontent.com/SebLague/Images/master/Portals.png)
