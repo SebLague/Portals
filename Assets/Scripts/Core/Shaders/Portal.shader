@@ -30,7 +30,7 @@
 
             sampler2D _MainTex;
             float4 _InactiveColour;
-            int active; // set to 1 to display texture, otherwise will draw test colour
+            int displayMask; // set to 1 to display texture, otherwise will draw test colour
             
 
             v2f vert (appdata v)
@@ -45,7 +45,7 @@
             {
                 float2 uv = i.screenPos.xy / i.screenPos.w;
                 fixed4 portalCol = tex2D(_MainTex, uv);
-                return portalCol * active + _InactiveColour * (1-active);
+                return portalCol * displayMask + _InactiveColour * (1-displayMask);
             }
             ENDCG
         }
