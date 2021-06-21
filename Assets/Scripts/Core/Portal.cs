@@ -19,6 +19,7 @@ public class Portal : MonoBehaviour {
     Material firstRecursionMat;
     List<PortalTraveller> trackedTravellers;
     MeshFilter screenMeshFilter;
+    int portalSideOld;
 
     void Awake () {
         playerCam = Camera.main;
@@ -42,7 +43,6 @@ public class Portal : MonoBehaviour {
 
             Vector3 offsetFromPortal = travellerT.position - transform.position;
             int portalSide = System.Math.Sign (Vector3.Dot (offsetFromPortal, transform.forward));
-            int portalSideOld = System.Math.Sign (Vector3.Dot (traveller.previousOffsetFromPortal, transform.forward));
             // Teleport the traveller if it has crossed from one side of the portal to the other
             if (portalSide != portalSideOld) {
                 var positionOld = travellerT.position;
@@ -57,7 +57,6 @@ public class Portal : MonoBehaviour {
             } else {
                 traveller.graphicsClone.transform.SetPositionAndRotation (m.GetColumn (3), m.rotation);
                 //UpdateSliceParams (traveller);
-                traveller.previousOffsetFromPortal = offsetFromPortal;
             }
         }
     }
@@ -274,7 +273,7 @@ public class Portal : MonoBehaviour {
     void OnTravellerEnterPortal (PortalTraveller traveller) {
         if (!trackedTravellers.Contains (traveller)) {
             traveller.EnterPortalThreshold ();
-            traveller.previousOffsetFromPortal = traveller.transform.position - transform.position;
+            portalSideOld = SideOfPortal(traveller.transform.position);
             trackedTravellers.Add (traveller);
         }
     }
